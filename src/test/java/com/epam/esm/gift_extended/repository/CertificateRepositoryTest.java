@@ -25,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
+import com.epam.esm.gift_extended.repository.forbidentouse.TagRepositoryWith;
+import com.epam.esm.gift_extended.repository.forbidentouse.UserRepositoryWithSpringData;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 @ExtendWith(SpringExtension.class)
@@ -55,13 +58,13 @@ class CertificateRepositoryTest {
     private EntityManager entityManager;
 
     @Autowired
-    private CertificateRepository certificateRepository;
+    private CertificateRepositoryWith certificateRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private TagRepositoryWith tagRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryWithSpringData userRepository;
 
     @Transactional
     @BeforeEach

@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.TagRepository;
+import com.epam.esm.gift_extended.repository.forbidentouse.TagRepositoryWith;
 
 @Service
 public class TagService implements GiftService<Tag> {
 
     @Autowired
-    private TagRepository repository;
+    private TagRepositoryWith repository;
 
     @Autowired
     private CertificateService certificateService;

@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.repository.CertificateRepository;
+import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
 
 class CertificateServiceTest {
 
@@ -49,7 +49,7 @@ class CertificateServiceTest {
     private CertificateService service = new CertificateService();
 
     @Mock
-    private CertificateRepository certificateRepository;
+    private CertificateRepositoryWith certificateRepository;
 
     @Mock
     private TagService tagService;

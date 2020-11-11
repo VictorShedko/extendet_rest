@@ -2,12 +2,14 @@ package com.epam.esm.gift_extended.repository;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
+import com.epam.esm.gift_extended.repository.forbidentouse.TagRepositoryWith;
+import com.epam.esm.gift_extended.repository.forbidentouse.UserRepositoryWithSpringData;
 
 @Service
 public class RepositoryTestUtil {
@@ -60,8 +62,8 @@ public class RepositoryTestUtil {
         certificate3.attachTag(tag3);
     }
 
-    public static void configure(TagRepository tagRepository, UserRepository userRepository,
-            CertificateRepository certificateRepository) {
+    public static void configure(TagRepositoryWith tagRepository, UserRepositoryWithSpringData userRepository,
+            CertificateRepositoryWith certificateRepository) {
 
         certificate1.setHolder(user1);
         certificate2.setHolder(user1);

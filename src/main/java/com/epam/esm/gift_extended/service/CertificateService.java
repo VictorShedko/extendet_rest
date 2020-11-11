@@ -21,13 +21,13 @@ import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.CertificateRepository;
+import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
 
 @Service
 public class CertificateService implements GiftService<Certificate> {
 
     @Autowired
-    private CertificateRepository repository;
+    private CertificateRepositoryWith repository;
 
     @Autowired
     private TagService tagService;
@@ -37,7 +37,7 @@ public class CertificateService implements GiftService<Certificate> {
     private UserService userService;
 
     @Autowired
-    public void setRepository(CertificateRepository repository) {
+    public void setRepository(CertificateRepositoryWith repository) {
         this.repository = repository;
     }
 

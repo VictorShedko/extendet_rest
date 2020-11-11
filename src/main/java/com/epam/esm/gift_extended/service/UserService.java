@@ -7,15 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.UserRepository;
+import com.epam.esm.gift_extended.repository.forbidentouse.UserRepositoryWithSpringData;
 
 @Service
 public class UserService implements GiftService<User> {
@@ -24,7 +22,7 @@ public class UserService implements GiftService<User> {
     private CertificateService certificateService;
 
     @Autowired
-    private UserRepository repository;
+    private UserRepositoryWithSpringData repository;
 
     @Override
     public void save(User user) {
