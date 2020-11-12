@@ -67,15 +67,6 @@ class CertificateRepositoryTest {
     private UserRepositoryWithSpringData userRepository;
 
     @Transactional
-    @BeforeEach
-    public void cofigure() {
-
-        RepositoryTestUtil.configure(tagRepository, userRepository, certificateRepository);
-        isConfigured = true;
-
-    }
-
-    @Transactional
     @AfterEach
     @DatabaseSetup("db.xml")
     public void deleteTestCert() {
@@ -161,22 +152,6 @@ class CertificateRepositoryTest {
         assertEquals(2, certificates.size());
     }
 
-    @Transactional
-    @Test
-    void findByTags() {
-        List<Certificate> list = new ArrayList();
-        certificateRepository.findDistinctByTags(RepositoryTestUtil.tag2).forEach(list::add);
-        assertEquals(2, list.size());
-    }
-
-    @Transactional
-    @Test
-    void findByContainsAllNames() {
-        Iterable<Certificate> certificates = certificateRepository.findByContainsAllTagNames(
-                List.of(RepositoryTestUtil.tag1, RepositoryTestUtil.tag2));
-        assertTrue(certificates.iterator().hasNext());
-        assertEquals(certificates.iterator().next(), RepositoryTestUtil.certificate1);
-    }
 
     @Transactional
     @Test

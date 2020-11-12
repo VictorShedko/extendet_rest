@@ -75,5 +75,13 @@ public class TagService implements GiftService<Tag> {
         return repository.findMostPopularTagFromRichestUserBySumOfCertificatePrice().orElseThrow(GiftException::new);
     }
 
+    @Override
+    public long countEntities(){
+        return repository.count();
+    }
+
+
+
+
 
 }

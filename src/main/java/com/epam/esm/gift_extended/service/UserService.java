@@ -43,6 +43,10 @@ public class UserService implements GiftService<User> {
         return repository.findAll();
     }
 
+    @Override
+    public long countEntities() {
+        return repository.count();
+    }
 
     @Override
     public List<User> allWithPagination(int page, int size) {

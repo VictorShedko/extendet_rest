@@ -18,4 +18,12 @@ public interface GiftService<T> {
     void delete(Integer id);
 
     Iterable<T> all();
+
+    long countEntities();
+
+    default long pages(long size){
+        return countEntities()+1/size;
+
+
+    }
 }

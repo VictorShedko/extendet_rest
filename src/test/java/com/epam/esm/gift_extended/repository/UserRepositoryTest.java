@@ -25,13 +25,6 @@ class UserRepositoryTest {
     private UserRepositoryWithSpringData userRepository;
     private boolean isConfigured;
 
-    @BeforeEach
-    public void cofigure(){
-        if(!isConfigured){
-            RepositoryTestUtil.configure(tagRepository,userRepository, certificateRepository);
-            isConfigured=true;
-        }
-    }
 
 
 
