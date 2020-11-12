@@ -10,7 +10,7 @@ public interface GiftRepository<T> {
 
     Optional<T> findByName(String name);
 
-    Page<T> findAll(Pageable pageable);
+    List<T> findAll(Pageable pageable);
 
     <S extends T> S save(S s);
 

@@ -9,9 +9,11 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.Tag;
 
+@Repository
 public class TagRepositoryImpl implements TagRepository{
     EntityManager manager;
 
@@ -49,11 +51,11 @@ public class TagRepositoryImpl implements TagRepository{
 
 
     @Override
-    public Page<Tag> findAll(Pageable pageable) {
+    public List<Tag> findAll(Pageable pageable) {
         Query query=manager.createQuery("SELECT T FROM Tag as T ");
         query.setFirstResult(pageable.getPageSize()*pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
-        return null;
+        return query.getResultList();
     }
 
     @Override

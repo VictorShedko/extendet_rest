@@ -10,8 +10,6 @@ public interface CertificateRepository extends GiftRepository<Certificate> {
 
     List<Certificate> findUserCertificates(Integer userId);
 
-    List<Certificate> findDistinctByTags(Tag tag);
-
     List<Certificate> findByContainsAllTagNames(List<Tag> tags);
 
     List<Certificate> findCertificateByHolderAndTags(User holder, Tag tag);
