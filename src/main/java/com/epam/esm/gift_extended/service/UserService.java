@@ -3,7 +3,6 @@ package com.epam.esm.gift_extended.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.forbidentouse.UserRepositoryWithSpringData;
+import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
 
 @Service
 public class UserService implements GiftService<User> {
@@ -21,8 +20,12 @@ public class UserService implements GiftService<User> {
     @Autowired
     private CertificateService certificateService;
 
+    private UserRepositoryImpl repository;
+
     @Autowired
-    private UserRepositoryWithSpringData repository;
+    public UserService(UserRepositoryImpl repository) {
+        this.repository = repository;
+    }
 
     @Override
     public void save(User user) {
@@ -42,7 +45,7 @@ public class UserService implements GiftService<User> {
 
 
     @Override
-    public Page<User> allWithPagination(int page, int size) {
+    public List<User> allWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("name"));
         return repository.findAll(pageable);
     }

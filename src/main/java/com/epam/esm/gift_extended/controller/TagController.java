@@ -15,7 +15,7 @@ import com.epam.esm.gift_extended.service.CertificateService;
 import com.epam.esm.gift_extended.service.TagService;
 
 @RestControllerAdvice
-@RequestMapping("api/tag")
+@RequestMapping("api/tags")
 public class TagController {
 
     @Autowired
@@ -24,13 +24,13 @@ public class TagController {
     @Autowired
     private CertificateService certificateService;
 
-    @GetMapping(value = "/tags")
+    @GetMapping(value = "/")
     public Iterable<Tag> getAllTag() {
         return tagService.all();
     }
 
-    @GetMapping(value = "/")
-    public Tag getTag(@RequestParam int tagId) {
+    @GetMapping(value = "/{tagId}")
+    public Tag getTag(@PathVariable int tagId) {
 
         return tagService.findById(tagId);
     }
@@ -41,7 +41,7 @@ public class TagController {
         tagService.add(tagName);
     }
 
-    @DeleteMapping(value = "/{tagId}/delete")
+    @DeleteMapping(value = "/{tagId}/")
     public void deleteTag(@PathVariable int tagId) {
 
         tagService.delete(tagId);

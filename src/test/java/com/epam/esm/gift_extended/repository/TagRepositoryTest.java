@@ -51,7 +51,7 @@ class TagRepositoryTest {
 
     @Transactional
     @Test
-    @DatabaseSetup("1.xml")
+    @DatabaseSetup("db.xml")
     void add() {
         Tag tag=new Tag();
         tag.setId(100);
@@ -63,7 +63,7 @@ class TagRepositoryTest {
         Iterable<Tag> newTags=tagRepository.findAll();
         List<Tag> tagList=new ArrayList<Tag>();
         newTags.forEach(tagList::add);
-        assertEquals(7,tagList.size());
+        assertEquals(9,tagList.size());
     }
 
     @Test
@@ -75,14 +75,14 @@ class TagRepositoryTest {
     }
 
     @Test
-    @DatabaseSetup("1.xml")
+    @DatabaseSetup("db.xml")
     void delete() {
         Optional<Tag> tag=tagRepository.findById(1);
         tagRepository.delete(tag.get());
         Iterable<Tag> tags=tagRepository.findAll();
         List<Tag> tagList=new ArrayList<Tag>();
         tags.forEach(tagList::add);
-        assertEquals(6,tagList.size());
+        assertEquals(7,tagList.size());
     }
 
     @Test

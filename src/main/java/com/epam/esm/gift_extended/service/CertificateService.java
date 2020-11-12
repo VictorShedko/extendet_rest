@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,13 +20,13 @@ import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
+import com.epam.esm.gift_extended.repository.CertificateRepository;
 
 @Service
 public class CertificateService implements GiftService<Certificate> {
 
     @Autowired
-    private CertificateRepositoryWith repository;
+    private CertificateRepository repository;
 
     @Autowired
     private TagService tagService;
@@ -37,7 +36,7 @@ public class CertificateService implements GiftService<Certificate> {
     private UserService userService;
 
     @Autowired
-    public void setRepository(CertificateRepositoryWith repository) {
+    public void setRepository(CertificateRepository repository) {
         this.repository = repository;
     }
 
@@ -81,7 +80,7 @@ public class CertificateService implements GiftService<Certificate> {
     public Iterable<Certificate> searchByTag(String name) {
         Optional<Tag> tag = tagService.findByName(name);
         Tag found = tag.orElseThrow(() -> new ResourceNotFoundedException("tag", name));
-        return repository.findDistinctByTags(found);
+        return repository.findByContainsAllTagNames(List.of(found));
     }
 
     public Iterable<Certificate> searchByListOfTagNames(List<String> names) {
@@ -143,7 +142,7 @@ public class CertificateService implements GiftService<Certificate> {
         });
     }
 
-    public Page<Certificate> allWithPagination(int page, int size) {
+    public List<Certificate> allWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
         return repository.findAll(pageable);
     }

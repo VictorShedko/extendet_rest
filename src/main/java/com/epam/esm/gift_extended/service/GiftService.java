@@ -1,12 +1,14 @@
 package com.epam.esm.gift_extended.service;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
+
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epam.esm.gift_extended.entity.User;
 
 public interface GiftService<T> {
 
-    Page<T> allWithPagination(int from, int amount);
+    List<T> allWithPagination(int from, int amount);
 
     T findById(Integer id);
 

@@ -18,7 +18,7 @@ import com.epam.esm.gift_extended.genertors.GeneratedSaverService;
 import com.epam.esm.gift_extended.service.CertificateService;
 
 @RestController
-@RequestMapping("api/gift-cert")
+@RequestMapping("api/gift-certs")
 public class CertificateController {
 
     @Autowired
@@ -27,18 +27,13 @@ public class CertificateController {
     @Autowired
     private CertificateService certificateService;
 
-    @GetMapping(value = "/certs")
-    public Iterable<Certificate> all() {
-        return certificateService.all();
-    }
-
-    @GetMapping(value = "/certs/pages")
+    @GetMapping(value = "/")
     public Iterable<Certificate> allPaged(@RequestParam Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
         return certificateService.allWithPagination(page, size);
     }
 
-    @GetMapping(value = "/certs/{tagName}/tagName")
+    @GetMapping(value = "/{tagName}/tagName")
     public Iterable<Certificate> byTag(@PathVariable(name = "tagName") String tagName) {
         return certificateService.searchByTag(tagName);
     }
@@ -73,7 +68,7 @@ public class CertificateController {
         certificateService.update(certificate);
     }
 
-    @DeleteMapping(value = "/{certificateId}/delete")
+    @DeleteMapping(value = "/{certificateId}/")
     public void delete(@PathVariable int certificateId) {
         certificateService.delete(certificateId);
     }

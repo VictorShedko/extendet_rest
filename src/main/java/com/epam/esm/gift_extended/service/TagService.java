@@ -1,34 +1,39 @@
 package com.epam.esm.gift_extended.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.epam.esm.gift_extended.entity.Tag;
+import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.forbidentouse.TagRepositoryWith;
+import com.epam.esm.gift_extended.repository.TagRepository;
 
 @Service
 public class TagService implements GiftService<Tag> {
 
-    @Autowired
-    private TagRepositoryWith repository;
+    private TagRepository repository;
 
     @Autowired
     private CertificateService certificateService;
+
+
+    public TagService(TagRepository repository) {
+        this.repository = repository;
+    }
 
     public Iterable<Tag> all() {
         return repository.findAll();
     }
 
     @Override
-    public Page<Tag> allWithPagination(int page, int size) {
+    public List<Tag> allWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
         return repository.findAll(pageable);
     }
