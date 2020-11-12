@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.epam.esm.gift_extended.entity.User;
-
 public interface GiftService<T> {
 
     List<T> allWithPagination(int from, int amount);
@@ -23,7 +21,7 @@ public interface GiftService<T> {
 
     default long pages(long size){
         return countEntities()+1/size;
-
-
     }
+
+    boolean isExist(T t);
 }

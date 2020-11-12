@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.epam.esm.gift_extended.entity.Tag;
-import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.TagRepository;
@@ -80,8 +79,9 @@ public class TagService implements GiftService<Tag> {
         return repository.count();
     }
 
-
-
-
+    @Override
+    public boolean isExist(Tag t) {
+        return repository.isExist(t);
+    }
 
 }

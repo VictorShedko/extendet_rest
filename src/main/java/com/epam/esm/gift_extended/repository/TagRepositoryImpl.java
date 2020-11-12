@@ -96,4 +96,11 @@ public class TagRepositoryImpl implements TagRepository{
         }
     }
 
+    @Override
+    public boolean isExist(Tag tag) {
+        Query query=manager.createQuery("SELECT COUNT(t) FROM Tag t WHERE t.name = :tag");
+        query.setParameter("tag",tag.getName());
+        return (Long)query.getSingleResult()>0;
+    }
+
 }

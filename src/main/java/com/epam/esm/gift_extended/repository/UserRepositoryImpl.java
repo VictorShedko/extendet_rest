@@ -88,4 +88,11 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    @Override
+    public boolean isExist(User user) {
+        Query query=manager.createQuery("SELECT COUNT(u) FROM User u WHERE u = :user");
+        query.setParameter("user",user);
+        return (Long)query.getSingleResult()>0;
+    }
+
 }

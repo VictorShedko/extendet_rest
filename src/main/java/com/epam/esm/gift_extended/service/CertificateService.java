@@ -45,6 +45,16 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.findAll();
     }
 
+    @Override
+    public long countEntities() {
+        return repository.count();
+    }
+
+    @Override
+    public boolean isExist(Certificate t) {
+        return repository.isExist(t);
+    }
+
     private final Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     public CertificateService() {
@@ -106,6 +116,11 @@ public class CertificateService implements GiftService<Certificate> {
     @Override
     public void save(Certificate certificate) {
         certificate.setCreationTime(new Date());
+        certificate.getTags().forEach(tag -> {
+            if(!tagService.isExist(tag)){
+                tagService.save(tag);
+            }
+        });
         repository.save(certificate);
     }
 

@@ -49,6 +49,11 @@ public class UserService implements GiftService<User> {
     }
 
     @Override
+    public boolean isExist(User user) {
+        return repository.isExist(user);
+    }
+
+    @Override
     public List<User> allWithPagination(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,Sort.by("name"));
         return repository.findAll(pageable);

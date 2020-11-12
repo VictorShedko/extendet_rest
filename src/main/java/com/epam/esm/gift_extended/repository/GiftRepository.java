@@ -21,4 +21,6 @@ public interface GiftRepository<T> {
     long count();
 
     void delete(T ent);
+
+    boolean isExist(T t);
 }

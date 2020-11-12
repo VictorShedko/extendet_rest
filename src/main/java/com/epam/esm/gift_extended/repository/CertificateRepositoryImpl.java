@@ -116,5 +116,11 @@ public class CertificateRepositoryImpl implements CertificateRepository {
         }
     }
 
+    @Override
+    public boolean isExist(Certificate certificate) {
+        Query query=manager.createQuery("SELECT COUNT(c) FROM Certificate c WHERE c = :cert");
+        query.setParameter("cert",certificate);
+        return (Long)query.getSingleResult()>0;
+    }
 
 }
