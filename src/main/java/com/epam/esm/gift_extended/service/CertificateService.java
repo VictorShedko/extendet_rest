@@ -25,20 +25,11 @@ import com.epam.esm.gift_extended.repository.CertificateRepository;
 @Service
 public class CertificateService implements GiftService<Certificate> {
 
-    @Autowired
-    private CertificateRepository repository;
+    private final CertificateRepository repository;
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
 
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    public void setRepository(CertificateRepository repository) {
-        this.repository = repository;
-    }
+    private final UserService userService;
 
     @Override
     public Iterable<Certificate> all() {
@@ -57,7 +48,7 @@ public class CertificateService implements GiftService<Certificate> {
 
     private final Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
-    public CertificateService() {
+    public CertificateService(CertificateRepository repository, TagService tagService, UserService userService) {
         giftCertificateUpdateMap = new HashMap<>();
 
         giftCertificateUpdateMap.put(cert -> cert.getName() != null, (base, patch) -> base.setName(patch.getName()));
@@ -71,6 +62,9 @@ public class CertificateService implements GiftService<Certificate> {
         giftCertificateUpdateMap.put(cert -> cert.getPrice() != null, (base, patch) -> base.setPrice(patch.getPrice()));
         giftCertificateUpdateMap.put(certificate -> true, (base, patch) -> base.setUpdateTime(new Date()));
 
+        this.repository = repository;
+        this.tagService = tagService;
+        this.userService = userService;
     }
 
     public Certificate updateCertFields(Certificate base, Certificate patch) {
@@ -138,7 +132,6 @@ public class CertificateService implements GiftService<Certificate> {
         Tag tag = tagService.findById(tagId);
         certificate.ifPresent(cert -> {
             cert.attachTag(tag);
-            repository.save(cert);
         });
     }
 
@@ -149,7 +142,6 @@ public class CertificateService implements GiftService<Certificate> {
         Tag tag = tagService.findById(tagId);
         certificate.ifPresent(cert -> {
             cert.detachTag(tag);
-            repository.save(cert);
         });
     }
 

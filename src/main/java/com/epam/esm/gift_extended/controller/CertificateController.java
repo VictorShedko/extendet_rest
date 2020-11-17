@@ -116,6 +116,10 @@ public class CertificateController {
         List<Certificate> CertsAsList = new ArrayList<>();
         Certs.forEach(CertsAsList::add);
         Iterable<EntityModel<Certificate>> resultCerts = CertsAsList.stream().map(cert -> {
+            cert.getTags()
+                    .forEach(tag -> tag.add(
+                            linkTo(methodOn(TagController.class).detachTag(cert.getId(), tag.getId())).withRel(
+                                    "detach")));
             if (cert.getHolder() != null) {
                 return EntityModel.of(cert,
                         linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),

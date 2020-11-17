@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +53,7 @@ public class TagController {
     @GetMapping(value = "/{tagName}/name")
     public Tag findByName(@PathVariable String tagName) {
         return attachTagLinks(tagService.findByName(tagName)
-                .orElseThrow(()->new ResourceNotFoundedException("tag wit name",tagName)));
+                .orElseThrow(() -> new ResourceNotFoundedException("tag wit name", tagName)));
     }
 
     @PostMapping(value = "/")
@@ -80,24 +81,25 @@ public class TagController {
     }
 
     @DeleteMapping(value = "/{certId}/tags/{tagId}/delete")
-    public void detachTag(@PathVariable int certId, @PathVariable int tagId) {
+    public ResponseEntity<Void> detachTag(@PathVariable int certId, @PathVariable int tagId) {
         certificateService.detachTag(tagId, certId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/")
     public CollectionModel<EntityModel<Tag>> allPaged(@RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
-        Iterable<Tag> tags=tagService.allWithPagination(page, size);
-        long all=tagService.pages(size);
-        List<Link> links=new ArrayList<>();
-        if(page>0){
-            links.add( linkTo(methodOn(TagController.class).allPaged(page-1, size)).withRel("prev"));
+        Iterable<Tag> tags = tagService.allWithPagination(page, size);
+        long all = tagService.pages(size);
+        List<Link> links = new ArrayList<>();
+        if (page > 0) {
+            links.add(linkTo(methodOn(TagController.class).allPaged(page - 1, size)).withRel("prev"));
         }
-        if (page<all){
-            links.add( linkTo(methodOn(TagController.class).allPaged(page+1, size)).withRel("next"));
+        if (page < all) {
+            links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size)).withRel("next"));
         }
-        links.add( linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
-        return attachLinksToList(tags,links);
+        links.add(linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
+        return attachLinksToList(tags, links);
     }
 
     @GetMapping(value = "mostPopular")
@@ -106,7 +108,7 @@ public class TagController {
     }
 
     private Tag attachTagLinks(Tag tag) {
-        tag.add(linkTo(methodOn(TagController.class).allPaged(0,10)).withRel("All tags"));
+        tag.add(linkTo(methodOn(TagController.class).allPaged(0, 10)).withRel("All tags"));
         tag.add(linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel("certs"));
         return tag;
     }
@@ -117,8 +119,8 @@ public class TagController {
         Iterable<EntityModel<Tag>> resultTags = tagsAsList.stream()
                 .map(tag -> EntityModel.of(tag,
                         linkTo(methodOn(TagController.class).findById(tag.getId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel("certs"),
-                        linkTo(methodOn(TagController.class).allPaged(0,10)).withRel("tags")))
+                        linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel(
+                                "certs"), linkTo(methodOn(TagController.class).allPaged(0, 10)).withRel("tags")))
                 .collect(Collectors.toList());
 
         return CollectionModel.of(resultTags, thisLinks);

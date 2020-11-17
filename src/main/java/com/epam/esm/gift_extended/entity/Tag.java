@@ -1,5 +1,7 @@
 package com.epam.esm.gift_extended.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +10,7 @@ import javax.persistence.Id;
 import org.springframework.hateoas.RepresentationModel;
 
 @Entity
-public class Tag extends RepresentationModel<Tag> {
+public class Tag extends RepresentationModel<Tag> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -17,14 +17,14 @@ import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
 @Service
 public class UserService implements GiftService<User> {
 
-    @Autowired
-    private CertificateService certificateService;
+    private final CertificateService certificateService;
 
     private UserRepositoryImpl repository;
 
     @Autowired
-    public UserService(UserRepositoryImpl repository) {
+    public UserService(UserRepositoryImpl repository, CertificateService certificateService) {
         this.repository = repository;
+        this.certificateService = certificateService;
     }
 
     @Override

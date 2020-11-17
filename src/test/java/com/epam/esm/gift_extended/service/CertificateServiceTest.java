@@ -46,7 +46,7 @@ class CertificateServiceTest {
     }
 
     @InjectMocks
-    private CertificateService service = new CertificateService();
+    private CertificateService service ;
 
     @Mock
     private CertificateRepositoryImpl certificateRepository;
@@ -54,9 +54,22 @@ class CertificateServiceTest {
     @Mock
     private TagService tagService;
 
+    @Mock
+    private UserService userService;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    void all() {
+        List<Certificate> certificates = List.of(testCert1, testCert2);
+        Mockito.when(certificateRepository.findAll()).thenReturn(certificates);
+
+        Iterable<Certificate> resultCerts = service.all();
+
+        assertEquals(resultCerts, certificates);
     }
 /*
     @Test

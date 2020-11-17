@@ -31,7 +31,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findRichestByOrderPriceSum() {
-        return Optional.empty();
+        Query query = manager.createNativeQuery("SELECT user.user_id,user.name "
+                + "                     FROM user " + "           "
+                + "                         JOIN certificate as c on user.user_id = c.user_id "
+                + "                 GROUP BY c.user_id " + "                     ORDER BY SUM(c.price) DESC "
+                + "                 LIMIT 1 ",User.class);
+        try {
+            List<Object> result=query.getResultList();
+            return Optional.ofNullable((User) query.getSingleResult());
+        } catch (NoResultException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override

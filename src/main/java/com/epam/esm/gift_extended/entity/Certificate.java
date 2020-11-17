@@ -1,5 +1,6 @@
 package com.epam.esm.gift_extended.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,12 +14,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-public class Certificate extends RepresentationModel<Certificate> {
+public class Certificate extends RepresentationModel<Certificate> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
