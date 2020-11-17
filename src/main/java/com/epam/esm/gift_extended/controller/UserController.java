@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.service.UserService;
 
@@ -42,8 +43,17 @@ public class UserController {
     public CollectionModel<EntityModel<User>> allPaged(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return attachLinksToList(service.allWithPagination(page, size),
-                linkTo(methodOn(UserController.class).allPaged(page, size)).withSelfRel());
+        List<User> users=service.allWithPagination(page, size);
+        long all=service.pages(size);
+        List<Link> links=new ArrayList<>();
+        if(page>0){
+            links.add( linkTo(methodOn(TagController.class).allPaged(page-1, size)).withRel("prev"));
+        }
+        if (page<all){
+            links.add( linkTo(methodOn(TagController.class).allPaged(page+1, size)).withRel("next"));
+        }
+        links.add( linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
+        return attachLinksToList(users,links);
     }
 
     @GetMapping(value = "/{id}/")
@@ -81,7 +91,7 @@ public class UserController {
     @GetMapping("/{pattern}/findByPattern")
     public CollectionModel<EntityModel<User>> findByPattern(@PathVariable String pattern) {
         return attachLinksToList(service.findByPartOfName(pattern),
-                linkTo(methodOn(UserController.class).findByPattern(pattern)).withSelfRel());
+               List.of( linkTo(methodOn(UserController.class).findByPattern(pattern)).withSelfRel()));
     }
 
     private User attachUserLinks(User user) {
@@ -90,7 +100,7 @@ public class UserController {
         return user;
     }
 
-    private CollectionModel<EntityModel<User>> attachLinksToList(Iterable<User> users, Link... thisLinks) {
+    private CollectionModel<EntityModel<User>> attachLinksToList(Iterable<User> users, List<Link> thisLinks) {
         List<User> usersAsList = new ArrayList<>();
         users.forEach(usersAsList::add);
         Iterable<EntityModel<User>> resultUsers = usersAsList.stream()

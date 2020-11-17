@@ -61,7 +61,7 @@ public class UserService implements GiftService<User> {
 
     @Override
     public User findById(Integer id) {
-        return repository.findById(id).orElseThrow(()->new ResourceNotFoundedException("user",id.toString()));
+        return repository.findById(id).orElseThrow(()->new ResourceNotFoundedException("user id ",id.toString()));
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class UserService implements GiftService<User> {
     }
 
     public User findByName(String name){
-        return repository.findByName(name).orElseThrow();
+        return repository.findByName(name).orElseThrow(()->new ResourceNotFoundedException("user name ",name));
     }
 
     public List<User> findByPartOfName(String pattern){

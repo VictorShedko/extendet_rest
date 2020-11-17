@@ -17,13 +17,15 @@ import com.epam.esm.gift_extended.repository.TagRepository;
 @Service
 public class TagService implements GiftService<Tag> {
 
+
     private TagRepository repository;
 
-    @Autowired
+
     private CertificateService certificateService;
 
-
-    public TagService(TagRepository repository) {
+    @Autowired
+    public TagService(TagRepository repository,CertificateService certificateService) {
+        this.certificateService=certificateService;
         this.repository = repository;
     }
 
@@ -40,24 +42,23 @@ public class TagService implements GiftService<Tag> {
     @Override
     public Tag findById(Integer tagId) {
 
-        return repository.findById(tagId).orElseThrow(()->new ResourceNotFoundedException("Tag",tagId.toString()));
+        return repository.findById(tagId).orElseThrow(() -> new ResourceNotFoundedException("Tag", tagId.toString()));
     }
 
-
     public void add(String tagName) {
-        Tag newTag=new Tag();
+        Tag newTag = new Tag();
         newTag.setName(tagName);
         save(newTag);
     }
 
     @Override
-    public void save(Tag tag){
+    public void save(Tag tag) {
         repository.save(tag);
     }
 
     @Override
     public void delete(Integer tagId) {
-        Optional<Tag> tagToDelete=repository.findById(tagId);
+        Optional<Tag> tagToDelete = repository.findById(tagId);
         tagToDelete.ifPresent(tag -> repository.delete(tag));
     }
 
@@ -66,16 +67,17 @@ public class TagService implements GiftService<Tag> {
         return certificateService.findById(certId).getTags();
     }
 
-    public Optional<Tag> findByName(String name){
+
+    public Optional<Tag> findByName(String name) {
         return repository.findByName(name);
     }
 
-    public Tag findMostPopular(){
+    public Tag findMostPopular() {
         return repository.findMostPopularTagFromRichestUserBySumOfCertificatePrice().orElseThrow(GiftException::new);
     }
 
     @Override
-    public long countEntities(){
+    public long countEntities() {
         return repository.count();
     }
 

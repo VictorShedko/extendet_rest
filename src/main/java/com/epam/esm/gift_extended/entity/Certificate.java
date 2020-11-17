@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -36,6 +37,7 @@ public class Certificate extends RepresentationModel<Certificate> {
     private User holder;
 
     @ManyToMany
+
     private List<Tag> tags;
 
     public Certificate() {

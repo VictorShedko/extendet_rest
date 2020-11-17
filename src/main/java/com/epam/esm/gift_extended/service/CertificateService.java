@@ -87,12 +87,6 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern);
     }
 
-    public Iterable<Certificate> searchByTag(String name) {
-        Optional<Tag> tag = tagService.findByName(name);
-        Tag found = tag.orElseThrow(() -> new ResourceNotFoundedException("tag", name));
-        return repository.findByContainsAllTagNames(List.of(found));
-    }
-
     public Iterable<Certificate> searchByListOfTagNames(List<String> names) {
         List<Tag> tags = names.stream()
                 .map(name -> tagService.findByName(name))
@@ -110,12 +104,14 @@ public class CertificateService implements GiftService<Certificate> {
 
     @Override
     public Certificate findById(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("tag", id.toString()));
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("cert ", id.toString()));
     }
 
     @Override
     public void save(Certificate certificate) {
-        certificate.setCreationTime(new Date());
+        Date nowDate=new Date();
+        certificate.setCreationTime(nowDate);
+        certificate.setUpdateTime(nowDate);
         certificate.getTags().forEach(tag -> {
             if(!tagService.isExist(tag)){
                 tagService.save(tag);

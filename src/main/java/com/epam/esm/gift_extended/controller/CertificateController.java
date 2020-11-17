@@ -37,49 +37,43 @@ public class CertificateController {
 
     @GetMapping(value = "/")
     public CollectionModel<EntityModel<Certificate>> allPaged(
-            @RequestParam(required = false,defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
-        long all=certificateService.pages(size);
-        List<Link> links=new ArrayList<>();
-        if(page>0){
-            links.add( linkTo(methodOn(CertificateController.class).allPaged(page-1, size)).withRel("prev"));
+        long all = certificateService.pages(size);
+        List<Link> links = new ArrayList<>();
+        if (page > 0) {
+            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size)).withRel("prev"));
         }
-        if (page<all){
-            links.add( linkTo(methodOn(CertificateController.class).allPaged(page-1, size)).withRel("next"));
+        if (page < all) {
+            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size)).withRel("next"));
         }
-        links.add( linkTo(methodOn(CertificateController.class).allPaged(page, size)).withSelfRel());
+        links.add(linkTo(methodOn(CertificateController.class).allPaged(page, size)).withSelfRel());
 
-        return attachLinksToList(certificateService.allWithPagination(page, size),links);
+        return attachLinksToList(certificateService.allWithPagination(page, size), links);
     }
 
-    @GetMapping(value = "/{tagName}/tagName")
-    public CollectionModel<EntityModel<Certificate>> byTag(@PathVariable(name = "tagName") String tagName) {
-        return attachLinksToList(certificateService.searchByTag(tagName),
-                List.of( linkTo(methodOn(CertificateController.class).byTag(tagName)).withSelfRel()));
+    @GetMapping(value = "/{id}/")
+    public Certificate findById(@PathVariable int id) {
+
+        return attachCertLinks(certificateService.findById(id));
     }
 
-    @GetMapping(value = "/certs/byTagsName")
+    @GetMapping(value = "/byTagsName")
     public CollectionModel<EntityModel<Certificate>> byTagNames(@RequestParam List<String> tagNames) {
-        return attachLinksToList( certificateService.searchByListOfTagNames(tagNames),
-                List.of( linkTo(methodOn(CertificateController.class).byTagNames(tagNames)).withSelfRel()));
+        return attachLinksToList(certificateService.searchByListOfTagNames(tagNames),
+                List.of(linkTo(methodOn(CertificateController.class).byTagNames(tagNames)).withSelfRel()));
     }
 
-    @GetMapping(value = "/certs/{find}/find")
+    @GetMapping(value = "/{find}/find")
     public Iterable<Certificate> find(@PathVariable(name = "find") String pattern) {
         return certificateService.searchByAnyString(pattern);
     }
 
-    @GetMapping(value = "/certs/findByUserAndTag")
-    public CollectionModel<EntityModel<Certificate>> findByUserAndTag(@RequestParam Integer userId, @RequestParam Integer tagId) {
-        return attachLinksToList(
-                certificateService.searchByUserAndTag(tagId, userId),
-                List.of( linkTo(methodOn(CertificateController.class).findByUserAndTag(userId,tagId)).withSelfRel()));
-    }
-
-    @GetMapping(value = "/certs/{id}")
-    public Certificate findById(@PathVariable int id) {
-
-        return attachCertLinks(certificateService.findById(id));
+    @GetMapping(value = "/findByUserAndTag")
+    public CollectionModel<EntityModel<Certificate>> findByUserAndTag(@RequestParam Integer userId,
+            @RequestParam Integer tagId) {
+        return attachLinksToList(certificateService.searchByUserAndTag(tagId, userId),
+                List.of(linkTo(methodOn(CertificateController.class).findByUserAndTag(userId, tagId)).withSelfRel()));
     }
 
     @PostMapping(value = "/")
@@ -99,11 +93,9 @@ public class CertificateController {
 
     @GetMapping(value = "/{userId}/user")
     public CollectionModel<EntityModel<Certificate>> userCerts(@PathVariable int userId) {
-         return attachLinksToList(
-                certificateService.findCertificatesByUser(userId),
-                 List.of(
-                         linkTo(methodOn(CertificateController.class).userCerts(userId)).withSelfRel(),
-                         linkTo(methodOn(UserController.class).findById(userId)).withRel("holder")));
+        return attachLinksToList(certificateService.findCertificatesByUser(userId),
+                List.of(linkTo(methodOn(CertificateController.class).userCerts(userId)).withSelfRel(),
+                        linkTo(methodOn(UserController.class).findById(userId)).withRel("holder")));
     }
 
     @GetMapping(value = "/lol")
@@ -111,22 +103,31 @@ public class CertificateController {
         saverService.generateEntities(1000, 1000, 10_000);
     }
 
-
     private Certificate attachCertLinks(Certificate cert) {
-        cert.add(linkTo(methodOn(CertificateController.class).allPaged(0,10)).withRel("All Certs"));
-        cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"));
+        cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10)).withRel("All Certs"));
+        if (cert.getHolder() != null) {
+            cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"));
+        }
         return cert;
     }
 
-    private CollectionModel<EntityModel<Certificate>> attachLinksToList(Iterable<Certificate> Certs, List<Link> thisLinks) {
+    private CollectionModel<EntityModel<Certificate>> attachLinksToList(Iterable<Certificate> Certs,
+            List<Link> thisLinks) {
         List<Certificate> CertsAsList = new ArrayList<>();
         Certs.forEach(CertsAsList::add);
-        Iterable<EntityModel<Certificate>> resultCerts = CertsAsList.stream()
-                .map(cert -> EntityModel.of(cert,
+        Iterable<EntityModel<Certificate>> resultCerts = CertsAsList.stream().map(cert -> {
+            if (cert.getHolder() != null) {
+                return EntityModel.of(cert,
                         linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
                         linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"),
-                        linkTo(methodOn(CertificateController.class).allPaged(0,10)).withRel("Certs")))
-                .collect(Collectors.toList());
+                        linkTo(methodOn(CertificateController.class).allPaged(0, 10)).withRel("Certs"));
+            } else {
+                return EntityModel.of(cert,
+                        linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
+                        linkTo(methodOn(CertificateController.class).allPaged(0, 10)).withRel("Certs"));
+            }
+
+        }).collect(Collectors.toList());
 
         return CollectionModel.of(resultCerts, thisLinks);
     }

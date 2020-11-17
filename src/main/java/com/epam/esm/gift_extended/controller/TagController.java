@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.epam.esm.gift_extended.entity.Tag;
+import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.service.CertificateService;
 import com.epam.esm.gift_extended.service.TagService;
 
@@ -28,22 +29,30 @@ import com.epam.esm.gift_extended.service.TagService;
 @RequestMapping("api/tags")
 public class TagController {
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
 
-    @Autowired
-    private CertificateService certificateService;
+    private final CertificateService certificateService;
+
+    public TagController(TagService tagService, CertificateService certificateService) {
+        this.tagService = tagService;
+        this.certificateService = certificateService;
+    }
 
     @Deprecated
-    @GetMapping(value = "/")
+    @GetMapping(value = "/all")
     public Iterable<Tag> getAllTag() {
         return tagService.all();
     }
 
     @GetMapping(value = "/{tagId}")
     public Tag findById(@PathVariable int tagId) {
-
         return attachTagLinks(tagService.findById(tagId));
+    }
+
+    @GetMapping(value = "/{tagName}/name")
+    public Tag findByName(@PathVariable String tagName) {
+        return attachTagLinks(tagService.findByName(tagName)
+                .orElseThrow(()->new ResourceNotFoundedException("tag wit name",tagName)));
     }
 
     @PostMapping(value = "/")
@@ -75,8 +84,8 @@ public class TagController {
         certificateService.detachTag(tagId, certId);
     }
 
-    @GetMapping(value = "/pages")
-    public CollectionModel<EntityModel<Tag>> allPaged(@RequestParam Integer page,
+    @GetMapping(value = "/")
+    public CollectionModel<EntityModel<Tag>> allPaged(@RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size) {
         Iterable<Tag> tags=tagService.allWithPagination(page, size);
         long all=tagService.pages(size);
@@ -85,7 +94,7 @@ public class TagController {
             links.add( linkTo(methodOn(TagController.class).allPaged(page-1, size)).withRel("prev"));
         }
         if (page<all){
-            links.add( linkTo(methodOn(TagController.class).allPaged(page-1, size)).withRel("next"));
+            links.add( linkTo(methodOn(TagController.class).allPaged(page+1, size)).withRel("next"));
         }
         links.add( linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
         return attachLinksToList(tags,links);
@@ -98,7 +107,7 @@ public class TagController {
 
     private Tag attachTagLinks(Tag tag) {
         tag.add(linkTo(methodOn(TagController.class).allPaged(0,10)).withRel("All tags"));
-        tag.add(linkTo(methodOn(CertificateController.class).byTag(tag.getName())).withRel("certs"));
+        tag.add(linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel("certs"));
         return tag;
     }
 
@@ -108,7 +117,7 @@ public class TagController {
         Iterable<EntityModel<Tag>> resultTags = tagsAsList.stream()
                 .map(tag -> EntityModel.of(tag,
                         linkTo(methodOn(TagController.class).findById(tag.getId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).byTag(tag.getName())).withRel("certs"),
+                        linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel("certs"),
                         linkTo(methodOn(TagController.class).allPaged(0,10)).withRel("tags")))
                 .collect(Collectors.toList());
 
