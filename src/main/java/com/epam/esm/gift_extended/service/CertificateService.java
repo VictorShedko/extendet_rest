@@ -105,7 +105,7 @@ public class CertificateService implements GiftService<Certificate> {
     public Iterable<Certificate> searchByUserAndTag(Integer tagId, Integer userId) {
         Tag tag = tagService.findById(tagId);
         User user = userService.findById(userId);
-        return repository.findCertificateByHolderAndTags(user, tag);
+        return repository.findCertificateByHolderAndTag(user, tag);
     }
 
     @Override

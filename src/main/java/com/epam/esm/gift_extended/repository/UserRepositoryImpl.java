@@ -83,8 +83,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(User user) {
-        if(manager.contains(user)){
-            manager.remove(user);
+        User userToDelete = manager.find(user.getClass(), user.getId());
+        if (userToDelete!=null) {
+
+            manager.remove(userToDelete);
+            manager.flush();
+            manager.clear();
+
         }
     }
 

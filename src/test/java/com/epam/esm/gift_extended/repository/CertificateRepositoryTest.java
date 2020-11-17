@@ -5,30 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.epam.esm.gift_extended.entity.Certificate;
-import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.repository.forbidentouse.CertificateRepositoryWith;
-import com.epam.esm.gift_extended.repository.forbidentouse.TagRepositoryWith;
-import com.epam.esm.gift_extended.repository.forbidentouse.UserRepositoryWithSpringData;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -58,14 +47,11 @@ class CertificateRepositoryTest {
     private EntityManager entityManager;
 
     @Autowired
-    private CertificateRepositoryWith certificateRepository;
+    private CertificateRepository certificateRepository;
 
     @Autowired
-    private TagRepositoryWith tagRepository;
-
-    @Autowired
-    private UserRepositoryWithSpringData userRepository;
-
+    private UserRepository userRepository;
+/*
     @Transactional
     @AfterEach
     @DatabaseSetup("db.xml")
@@ -162,5 +148,5 @@ class CertificateRepositoryTest {
         certificates = new ArrayList<>(
                 certificateRepository.findDistinctByDescriptionContainingAndNameContaining("t1", "not exist"));
         assertEquals(1, certificates.size());
-    }
+    }*/
 }

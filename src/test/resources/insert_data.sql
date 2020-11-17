@@ -1,5 +1,4 @@
 
-INSERT INTO hibernate_sequence (next_val) VALUES (16);
 
 INSERT INTO tag (id, name) VALUES (9, 'spa');
 INSERT INTO tag (id, name) VALUES (10, 'massage');

@@ -24,11 +24,11 @@ import com.epam.esm.gift_extended.entity.Tag;
 
 @ExtendWith(SpringExtension.class)
 @EnableTransactionManagement
-@SpringBootTest(classes = GiftExtendedApplication.class)
+@SpringBootTest
 class TagRepositoryTest {
 
     @Autowired
-    private TagRepositoryImpl tagRepository;
+    private TagRepository tagRepository;
 
     @Autowired
     private DataSource dataSource;
@@ -66,7 +66,7 @@ class TagRepositoryTest {
 
     @Test
     void delete() {
-        Optional<Tag> tag=tagRepository.findById(9);
+        Optional<Tag> tag=tagRepository.findById(13);
         tagRepository.delete(tag.get());
         Iterable<Tag> tags=tagRepository.findAll();
         List<Tag> tagList=new ArrayList<Tag>();

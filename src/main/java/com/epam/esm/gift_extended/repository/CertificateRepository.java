@@ -12,7 +12,7 @@ public interface CertificateRepository extends GiftRepository<Certificate> {
 
     List<Certificate> findByContainsAllTagNames(List<Tag> tags);
 
-    List<Certificate> findCertificateByHolderAndTags(User holder, Tag tag);
+    List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag);
 
     List<Certificate> findDistinctByDescriptionContainingAndNameContaining(String name, String description);
 

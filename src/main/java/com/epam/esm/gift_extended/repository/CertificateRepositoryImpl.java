@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,7 +45,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
                 + "WHERE tag in :tags "
                 + "group by cert having count(tag)=:tagSize");
         query.setParameter("tags",tags);
-        query.setParameter("tagSize",tags.size());
+        query.setParameter("tagSize", (long) tags.size());
         return query.getResultList();
     }
 
@@ -51,12 +53,16 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     public Optional<Certificate> findByName(String name) {
         Query query=manager.createQuery("SELECT C FROM Certificate as C WHERE C.name=:name");
         query.setParameter("name",name);
-        return Optional.ofNullable((Certificate) query.getSingleResult());
+        try {
+            return Optional.ofNullable((Certificate) query.getSingleResult());
+        } catch (NoResultException exception) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public List<Certificate> findCertificateByHolderAndTags(User holder, Tag tag) {
-        Query query=manager.createQuery("SELECT DISTINCT C FROM Certificate as C join Tag as T WHERE C.holder=:user and T=:tag");
+    public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag) {
+        Query query=manager.createQuery("SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user");
         query.setParameter("user",holder);
         query.setParameter("tag",tag);
         return query.getResultList();
@@ -80,6 +86,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
         return query.getResultList();
     }
 
+    @Transactional
     @Override
     public <S extends Certificate> S save(S s) {
         if (s.getId() == null) {
@@ -109,17 +116,24 @@ public class CertificateRepositoryImpl implements CertificateRepository {
         return (Long) query.getSingleResult();
     }
 
+    @Transactional
     @Override
     public void delete(Certificate certificate) {
-        if(manager.contains(certificate)){
-            manager.remove(certificate);
+
+        Certificate certToDelete = manager.find(certificate.getClass(), certificate.getId());
+        if (certToDelete!=null) {
+
+            manager.remove(certToDelete);
+            manager.flush();
+            manager.clear();
+
         }
     }
 
     @Override
     public boolean isExist(Certificate certificate) {
-        Query query=manager.createQuery("SELECT COUNT(c) FROM Certificate c WHERE c = :cert");
-        query.setParameter("cert",certificate);
+        Query query=manager.createQuery("SELECT COUNT(c) FROM Certificate c WHERE c.id = :cert");
+        query.setParameter("cert",certificate.getId());
         return (Long)query.getSingleResult()>0;
     }
 
