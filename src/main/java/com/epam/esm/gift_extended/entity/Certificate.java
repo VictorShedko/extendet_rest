@@ -37,7 +37,6 @@ public class Certificate extends RepresentationModel<Certificate> implements Ser
     private User holder;
 
     @ManyToMany
-
     private List<Tag> tags;
 
     public Certificate() {

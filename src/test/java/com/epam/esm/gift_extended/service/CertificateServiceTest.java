@@ -18,6 +18,7 @@ import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.repository.CertificateRepositoryImpl;
 
+
 class CertificateServiceTest {
 
     private static User user = new User();
@@ -71,16 +72,6 @@ class CertificateServiceTest {
 
         assertEquals(resultCerts, certificates);
     }
-/*
-    @Test
-    void all() {
-        List<Certificate> certificates = List.of(testCert1, testCert2);
-        Mockito.when(certificateRepository.findAll()).thenReturn(certificates);
-
-        Iterable<Certificate> resultCerts = service.all();
-
-        assertEquals(resultCerts, certificates);
-    }
 
     @Test
     void searchByAnyString() {
@@ -91,21 +82,26 @@ class CertificateServiceTest {
         assertEquals(certificates, allCerts);
     }
 
-    @Test
-    void searchByTag() {
-        Mockito.when(tagService.findByName("test")).thenReturn(Optional.of(tag1));
-        Mockito.when(certificateRepository.findDistinctByTags(tag1)).thenReturn(List.of(testCert1, testCert2));
-        service.searchByTag("test");
-    }
 
     @Test
     void searchByListOfTagNames() {
+        Tag t=new Tag(1,"1");
+        Mockito.when(tagService.findByName(Mockito.any())).thenReturn(Optional.of(t));
+        Mockito.when(certificateRepository.findByContainsAllTagNames(Mockito.any())).thenReturn(List.of(testCert1));
         List<String> strings=List.of("1","2","3");
-        service.searchByListOfTagNames(strings);
+        List<Certificate> certificates=service.searchByListOfTagNames(strings);
+        assertEquals(1,certificates.size());
+        assertEquals(testCert1,certificates.get(0));
     }
 
     @Test
     void searchByUserAndTag() {
+        Mockito.when(tagService.findById(1)).thenReturn(tag1);
+        Mockito.when(certificateRepository.findCertificateByHolderAndTag(user,tag1)).thenReturn(List.of(testCert1));
+        Mockito.when(userService.findById(2)).thenReturn(user);
+        List<Certificate> certificates=service.searchByUserAndTag(1,2);
+        assertEquals(certificates.get(0),testCert1);
+
     }
 
     @Test
@@ -126,10 +122,14 @@ class CertificateServiceTest {
 
     @Test
     void update() {
-        Mockito.when(certificateRepository.findById(1)).thenReturn(Optional.of(testCert1));
+        Certificate certificate=new Certificate();
+        certificate.setId(testCert1.getId());
+        Mockito.when(certificateRepository.findById(testCert1.getId())).thenReturn(Optional.of(certificate));
         service.update(testCert1);
-        Mockito.verify(certificateRepository).save(testCert2);
-
+        assertEquals(certificate.getCreationTime(),testCert1.getCreationTime());
+        assertEquals(certificate.getHolder(),testCert1.getHolder());
+        assertEquals(certificate.getDuration(),testCert1.getDuration());
+        assertEquals(certificate.getPrice(),testCert1.getPrice());
     }
 
     @Test
@@ -141,25 +141,40 @@ class CertificateServiceTest {
 
     @Test
     void attachTag() {
+        Certificate certificate=new Certificate();
+        Mockito.when(tagService.findById(1)).thenReturn(tag1);
+        Mockito.when(certificateRepository.findById(2)).thenReturn(Optional.of(certificate));
         service.attachTag(1, 2);
+        assertEquals(1,certificate.getTags().size());
+        assertEquals(tag1,certificate.getTags().get(0));
     }
 
     @Test
     void detachTag() {
+        Certificate certificate=new Certificate();
+        certificate.attachTag(tag1);
+        Mockito.when(tagService.findById(1)).thenReturn(tag1);
+        Mockito.when(certificateRepository.findById(2)).thenReturn(Optional.of(certificate));
+        service.detachTag(1, 2);
+        assertEquals(0,certificate.getTags().size());
+
     }
 
-    @Test
-    void allWithPagination() {
-    }
 
     @Test
     void findCertificatesByUser() {
+        List list=List.of(testCert1);
+        Mockito.when(certificateRepository.findUserCertificates(1)).thenReturn(list);
+        assertEquals(list,service.findCertificatesByUser(1));
+
     }
 
     @Test
     void setHolder() {
+        Certificate certificate=new Certificate();
+        Mockito.when(certificateRepository.findById(1)).thenReturn(Optional.of(certificate));
         service.setHolder(1, user);
+        assertEquals(user,certificate.getHolder());
     }
 
- */
 }

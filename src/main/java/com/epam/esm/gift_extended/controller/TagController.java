@@ -59,7 +59,7 @@ public class TagController {
     @PostMapping(value = "/")
     public void addTag(@RequestBody String tagName) {
 
-        tagService.add(tagName);
+        tagService.saveFromString(tagName);
     }
 
     @DeleteMapping(value = "/{tagId}/")
@@ -88,17 +88,18 @@ public class TagController {
 
     @GetMapping(value = "/")
     public CollectionModel<EntityModel<Tag>> allPaged(@RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        Iterable<Tag> tags = tagService.allWithPagination(page, size);
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "asc")String sort) {
+        Iterable<Tag> tags = tagService.allWithPagination(page, size,sort );
         long all = tagService.pages(size);
         List<Link> links = new ArrayList<>();
         if (page > 0) {
-            links.add(linkTo(methodOn(TagController.class).allPaged(page - 1, size)).withRel("prev"));
+            links.add(linkTo(methodOn(TagController.class).allPaged(page - 1, size,sort)).withRel("prev"));
         }
         if (page < all) {
-            links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size)).withRel("next"));
+            links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size,sort)).withRel("next"));
         }
-        links.add(linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
+        links.add(linkTo(methodOn(TagController.class).allPaged(page, size,sort)).withSelfRel());
         return attachLinksToList(tags, links);
     }
 
@@ -108,7 +109,7 @@ public class TagController {
     }
 
     private Tag attachTagLinks(Tag tag) {
-        tag.add(linkTo(methodOn(TagController.class).allPaged(0, 10)).withRel("All tags"));
+        tag.add(linkTo(methodOn(TagController.class).allPaged(0, 10,"asc")).withRel("All tags"));
         tag.add(linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel("certs"));
         return tag;
     }
@@ -120,7 +121,7 @@ public class TagController {
                 .map(tag -> EntityModel.of(tag,
                         linkTo(methodOn(TagController.class).findById(tag.getId())).withSelfRel(),
                         linkTo(methodOn(CertificateController.class).byTagNames(List.of(tag.getName()))).withRel(
-                                "certs"), linkTo(methodOn(TagController.class).allPaged(0, 10)).withRel("tags")))
+                                "certs"), linkTo(methodOn(TagController.class).allPaged(0, 10,"asc")).withRel("tags")))
                 .collect(Collectors.toList());
 
         return CollectionModel.of(resultTags, thisLinks);

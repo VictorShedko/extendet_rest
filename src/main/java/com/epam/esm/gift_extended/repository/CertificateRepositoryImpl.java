@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -18,11 +17,12 @@ import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.UniqFieldException;
+import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Repository
 public class CertificateRepositoryImpl implements CertificateRepository {
 
-    private EntityManager manager;
+    private final EntityManager manager;
 
     @Autowired
     public CertificateRepositoryImpl(EntityManager manager) {
@@ -76,8 +76,9 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
-    public List<Certificate> findAll(Pageable pageable) {
-        Query query = manager.createQuery("SELECT C FROM Certificate as C ");
+    public List<Certificate> findAll(PageSortInfo pageable) {
+        Query query = manager.createQuery(
+                "SELECT C FROM Certificate as C order by C.name" + pageable.getSortDirection().getTypeAsString());
         query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
         return query.getResultList();

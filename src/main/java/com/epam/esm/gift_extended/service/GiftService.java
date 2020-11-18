@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface GiftService<T> {
 
-    List<T> allWithPagination(int from, int amount);
+    List<T> allWithPagination(int from, int amount, String sort);
 
     T findById(Integer id);
 

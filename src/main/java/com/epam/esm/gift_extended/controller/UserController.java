@@ -38,17 +38,18 @@ public class UserController {
 
     @GetMapping(value = "/")
     public CollectionModel<EntityModel<User>> allPaged(@RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        List<User> users = service.allWithPagination(page, size);
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "asc")String sort) {
+        List<User> users = service.allWithPagination(page, size, sort);
         long all = service.pages(size);
         List<Link> links = new ArrayList<>();
         if (page > 0) {
-            links.add(linkTo(methodOn(TagController.class).allPaged(page - 1, size)).withRel("prev"));
+            links.add(linkTo(methodOn(TagController.class).allPaged(page - 1, size,sort)).withRel("prev"));
         }
         if (page < all) {
-            links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size)).withRel("next"));
+            links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size,sort)).withRel("next"));
         }
-        links.add(linkTo(methodOn(TagController.class).allPaged(page, size)).withSelfRel());
+        links.add(linkTo(methodOn(TagController.class).allPaged(page, size,sort)).withSelfRel());
         return attachLinksToList(users, links);
     }
 
@@ -91,7 +92,7 @@ public class UserController {
     }
 
     private User attachUserLinks(User user) {
-        user.add(linkTo(methodOn(UserController.class).allPaged(0, 10)).withRel("All users"));
+        user.add(linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("All users"));
         user.add(linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"));
         return user;
     }
@@ -103,7 +104,7 @@ public class UserController {
                 .map(user -> EntityModel.of(user,
                         linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
                         linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"),
-                        linkTo(methodOn(UserController.class).allPaged(0, 10)).withRel("users")))
+                        linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("users")))
                 .collect(Collectors.toList());
 
         return CollectionModel.of(resultUsers, thisLinks);
