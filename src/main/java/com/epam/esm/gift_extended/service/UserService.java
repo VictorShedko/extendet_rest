@@ -3,14 +3,16 @@ package com.epam.esm.gift_extended.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.epam.esm.gift_extended.entity.RegistrationRequest;
+import com.epam.esm.gift_extended.entity.Role;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
+import com.epam.esm.gift_extended.security.JWTProvider;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Service
@@ -20,15 +22,38 @@ public class UserService implements GiftService<User> {
 
     private final UserRepositoryImpl repository;
 
+    private final PasswordEncoder passwordEncoder;
+
+    private final JWTProvider tokenProvider;
+
     @Autowired
-    public UserService(UserRepositoryImpl repository, CertificateService certificateService) {
+    public UserService(UserRepositoryImpl repository, CertificateService certificateService,
+            PasswordEncoder passwordEncoder, JWTProvider tokenProvider) {
         this.repository = repository;
         this.certificateService = certificateService;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
     public void save(User user) {
         repository.save(user);
+    }
+
+    public void save(RegistrationRequest request) {
+        User user = new User();
+        user.setName(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setRole(Role.USER);
+        repository.save(user);
+    }
+
+    public String auth(RegistrationRequest request) {
+        User userFromBd = repository.findByName(request.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundedException("user with username ", request.getUsername()));
+        passwordEncoder.matches(userFromBd.getPassword(), request.getUsername());
+        return tokenProvider.generateToken(userFromBd.getName());
+
     }
 
     @Transactional

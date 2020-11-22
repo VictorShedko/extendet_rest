@@ -1,9 +1,12 @@
 package com.epam.esm.gift_extended.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,13 +21,24 @@ public class User extends RepresentationModel<User> implements Serializable {
     private Integer userId;
     @Column(unique = true)
     private String name;
+    private String password;
+    @Enumerated
+    private Role role;
 
-    public Integer getId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setId(Integer userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getName() {
@@ -35,4 +49,11 @@ public class User extends RepresentationModel<User> implements Serializable {
         this.name = name;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
