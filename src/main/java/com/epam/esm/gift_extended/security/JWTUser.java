@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class JWTUser implements UserDetails  {
-    private Integer id;
     private String username;
     private String password;
     private List<? extends GrantedAuthority> authorities;

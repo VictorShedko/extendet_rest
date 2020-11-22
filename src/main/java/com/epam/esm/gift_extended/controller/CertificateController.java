@@ -41,18 +41,18 @@ public class CertificateController {
     public CollectionModel<EntityModel<Certificate>> allPaged(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false, defaultValue = "asc")String sort) {
+            @RequestParam(required = false, defaultValue = "asc") String sort) {
         long all = certificateService.pages(size);
         List<Link> links = new ArrayList<>();
         if (page > 0) {
-            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size,sort)).withRel("prev"));
+            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size, sort)).withRel("prev"));
         }
         if (page < all) {
-            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size,sort)).withRel("next"));
+            links.add(linkTo(methodOn(CertificateController.class).allPaged(page - 1, size, sort)).withRel("next"));
         }
-        links.add(linkTo(methodOn(CertificateController.class).allPaged(page, size,sort)).withSelfRel());
+        links.add(linkTo(methodOn(CertificateController.class).allPaged(page, size, sort)).withSelfRel());
 
-        return attachLinksToList(certificateService.allWithPagination(page, size,sort), links);
+        return attachLinksToList(certificateService.allWithPagination(page, size, sort), links);
     }
 
     @GetMapping(value = "/{id}/")
@@ -107,9 +107,9 @@ public class CertificateController {
     }
 
     private Certificate attachCertLinks(Certificate cert) {
-        cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10,"asc")).withRel("All Certs"));
+        cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("All Certs"));
         if (cert.getHolder() != null) {
-            cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"));
+            cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getUserId())).withRel("holder"));
         }
         return cert;
     }
@@ -126,12 +126,12 @@ public class CertificateController {
             if (cert.getHolder() != null) {
                 return EntityModel.of(cert,
                         linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
-                        linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"),
-                        linkTo(methodOn(CertificateController.class).allPaged(0, 10,"asc")).withRel("Certs"));
+                        linkTo(methodOn(UserController.class).findById(cert.getHolder().getUserId())).withRel("holder"),
+                        linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("Certs"));
             } else {
                 return EntityModel.of(cert,
                         linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).allPaged(0, 10,"asc")).withRel("Certs"));
+                        linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("Certs"));
             }
 
         }).collect(Collectors.toList());
