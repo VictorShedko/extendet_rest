@@ -2,6 +2,7 @@ package com.epam.esm.gift_extended.exception;
 
 import java.util.function.Function;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorMassageByException {
@@ -16,7 +17,8 @@ public enum ErrorMassageByException {
     }, HttpStatus.BAD_REQUEST), RESOURCE_NOT_FOUND(4, ResourceNotFoundedException.class, ex -> {
         return "Resource not founded requested resource is " + ((ResourceNotFoundedException) ex).getResourceName()
                 + " requested value is " + ((ResourceNotFoundedException) ex).getRequestedValues();
-    }, HttpStatus.NOT_FOUND);
+    }, HttpStatus.NOT_FOUND), DATA_INTEGRITY(8, DataIntegrityViolationException.class,
+            exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST);
 
     private int code;
     private Class<? extends Exception> exceptionClass;

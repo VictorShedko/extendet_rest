@@ -9,6 +9,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +28,18 @@ public class CertificateService implements GiftService<Certificate> {
 
     private final CertificateRepository repository;
 
-    private final TagService tagService;
+    private  TagService tagService;
 
-    private final UserService userService;
+    @Autowired
+    public void setTagService(TagService tagService) {
+        this.tagService = tagService;
+    }
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    private  UserService userService;
 
     @Override
     public Iterable<Certificate> all() {
@@ -44,9 +56,10 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.isExist(t);
     }
 
-    private final Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
+    private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
-    public CertificateService(CertificateRepository repository, TagService tagService, UserService userService) {
+    @PostConstruct
+    public void initHashMap(){
         giftCertificateUpdateMap = new HashMap<>();
 
         giftCertificateUpdateMap.put(cert -> cert.getName() != null, (base, patch) -> base.setName(patch.getName()));
@@ -71,10 +84,10 @@ public class CertificateService implements GiftService<Certificate> {
         });
         giftCertificateUpdateMap.put(cert -> cert.getPrice() != null, (base, patch) -> base.setPrice(patch.getPrice()));
         giftCertificateUpdateMap.put(certificate -> true, (base, patch) -> base.setUpdateTime(new Date()));
+    }
 
+    public CertificateService(CertificateRepository repository) {
         this.repository = repository;
-        this.tagService = tagService;
-        this.userService = userService;
     }
 
     public Certificate updateCertFields(Certificate base, Certificate patch) {
@@ -106,6 +119,7 @@ public class CertificateService implements GiftService<Certificate> {
     }
 
     @Override
+
     public Certificate findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("cert ", id.toString()));
     }
@@ -153,7 +167,7 @@ public class CertificateService implements GiftService<Certificate> {
 
     @Override
     public List<Certificate> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = new PageSortInfo(size, page, SortDirection.getByStringOrDefault(sort));
+        PageSortInfo pageable = new PageSortInfo( page,size, SortDirection.getByStringOrDefault(sort));
         return repository.findAll(pageable);
     }
 

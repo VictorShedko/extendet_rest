@@ -15,15 +15,17 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 @Service
 public class TagService implements GiftService<Tag> {
 
-
     private final TagRepository repository;
 
-
-    private final CertificateService certificateService;
+    private CertificateService certificateService;
 
     @Autowired
-    public TagService(TagRepository repository,CertificateService certificateService) {
-        this.certificateService=certificateService;
+    public void setCertificateService(CertificateService certificateService) {
+        this.certificateService = certificateService;
+    }
+
+    @Autowired
+    public TagService(TagRepository repository) {
         this.repository = repository;
     }
 
@@ -33,7 +35,7 @@ public class TagService implements GiftService<Tag> {
 
     @Override
     public List<Tag> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size,sort);
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
         return repository.findAll(pageable);
     }
 
@@ -63,7 +65,6 @@ public class TagService implements GiftService<Tag> {
     public List<Tag> tags(int certId) {
         return certificateService.findById(certId).getTags();
     }
-
 
     public Optional<Tag> findByName(String name) {
         return repository.findByName(name);

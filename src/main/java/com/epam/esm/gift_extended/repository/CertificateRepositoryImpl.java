@@ -78,7 +78,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT C FROM Certificate as C order by C.name" + pageable.getSortDirection().getTypeAsString());
+                "SELECT C FROM Certificate as C order by C.name " + pageable.getSortDirection().getTypeAsString());
         query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
         return query.getResultList();
