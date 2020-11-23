@@ -16,15 +16,18 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 public class TagService implements GiftService<Tag> {
 
 
-    private final TagRepository repository;
+    private TagRepository repository;
 
-
-    private final CertificateService certificateService;
+    private CertificateService certificateService;
 
     @Autowired
-    public TagService(TagRepository repository,CertificateService certificateService) {
-        this.certificateService=certificateService;
+    public void setRepository(TagRepository repository) {
         this.repository = repository;
+    }
+    @Autowired
+
+    public void setCertificateService(CertificateService certificateService) {
+        this.certificateService = certificateService;
     }
 
     public Iterable<Tag> all() {

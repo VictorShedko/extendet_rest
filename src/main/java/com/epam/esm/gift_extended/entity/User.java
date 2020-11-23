@@ -25,7 +25,7 @@ public class User extends RepresentationModel<User> implements Serializable {
     @Enumerated
     private Role role;
 
-    public Integer getUserId() {
+    public Integer getId() {
         return userId;
     }
 

@@ -32,6 +32,8 @@ public class JWTUserFactory {
         jwtUser.setAuthorities(authorities);
         jwtUser.setPassword(user.getPassword());
         jwtUser.setUsername(user.getName());
+        jwtUser.setId(user.getId());
+        jwtUser.setRole(user.getRole());
         return jwtUser;
     }
 }

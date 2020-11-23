@@ -6,10 +6,30 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.epam.esm.gift_extended.entity.Role;
+
 public class JWTUser implements UserDetails  {
     private String username;
     private String password;
+    private Integer id;
+    private Role role;
     private List<? extends GrantedAuthority> authorities;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public void setUsername(String username) {
         this.username = username;

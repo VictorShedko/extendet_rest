@@ -18,21 +18,33 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 @Service
 public class UserService implements GiftService<User> {
 
-    private final CertificateService certificateService;
+    private CertificateService certificateService;
 
     private final UserRepositoryImpl repository;
 
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
-    private final JWTProvider tokenProvider;
+    private JWTProvider tokenProvider;
 
     @Autowired
-    public UserService(UserRepositoryImpl repository, CertificateService certificateService,
-            PasswordEncoder passwordEncoder, JWTProvider tokenProvider) {
-        this.repository = repository;
+    public void setCertificateService(CertificateService certificateService) {
         this.certificateService = certificateService;
+    }
+
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void setTokenProvider(JWTProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
+    }
+
+    @Autowired
+    public UserService(UserRepositoryImpl repository) {
+        this.repository = repository;
+
     }
 
     @Override

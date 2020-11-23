@@ -19,39 +19,60 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.epam.esm.gift_extended.security.JWTProvider;
 import com.epam.esm.gift_extended.security.JWTUser;
 import com.epam.esm.gift_extended.security.JWTUserDetailsService;
+import com.epam.esm.gift_extended.security.UserIdInURIValidator;
 
 import lombok.extern.java.Log;
 
 @Log
 @Component
-public class JWTFilter  extends GenericFilterBean {
+public class JWTFilter extends GenericFilterBean {
+
     public static final String AUTHORIZATION = "Authorization";
 
-    @Autowired
+    private UserIdInURIValidator userIdInURIValidator;
+
     private JWTProvider jwtProvider;
 
-    @Autowired
     private JWTUserDetailsService userDetailsService;
 
+    @Autowired
+    public void setUserIdInURIValidator(UserIdInURIValidator userIdInURIValidator) {
+        this.userIdInURIValidator = userIdInURIValidator;
+    }
+
+    @Autowired
+    public void setJwtProvider(JWTProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
+    }
+
+    @Autowired
+    public void setUserDetailsService(JWTUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws
-            IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         logger.info("do filter...");
-        HttpServletRequest httpServletRequest=(HttpServletRequest) servletRequest;
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String token = getTokenFromRequest(httpServletRequest);
 
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
+            String url = httpServletRequest.getRequestURI();
             JWTUser customUserDetails = userDetailsService.loadUserByUsername(userLogin);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            if (userIdInURIValidator.validate(url, customUserDetails.getId(), customUserDetails.getRole())) {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+                        customUserDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearer = request.getHeader(AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+        if (hasText(bearer)) {
             return bearer.substring(7);
         }
         return null;

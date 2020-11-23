@@ -13,8 +13,6 @@ import com.epam.esm.gift_extended.genertors.GeneratedSaverService;
 
 @SpringBootApplication
 @EnableTransactionManagement
-@EnableAuthorizationServer
-@EnableResourceServer
 public class GiftExtendedApplication {
 
 

@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.User;
 
 @ExtendWith(SpringExtension.class)
@@ -70,7 +69,7 @@ class UserRepositoryImplTest {
 
     @Test
     void findById() {
-        Iterable<User> users= userRepository.findAll();
+
         Optional<User> user = userRepository.findById(4);
         assertEquals(4,user.get().getId());
         assertEquals("Liza",user.get().getName());

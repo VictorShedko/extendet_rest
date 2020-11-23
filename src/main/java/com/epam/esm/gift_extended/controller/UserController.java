@@ -94,7 +94,7 @@ public class UserController {
 
     private User attachUserLinks(User user) {
         user.add(linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("All users"));
-        user.add(linkTo(methodOn(CertificateController.class).userCerts(user.getUserId())).withRel("certs"));
+        user.add(linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"));
         return user;
     }
 
@@ -123,8 +123,8 @@ public class UserController {
         users.forEach(usersAsList::add);
         Iterable<EntityModel<User>> resultUsers = usersAsList.stream()
                 .map(user -> EntityModel.of(user,
-                        linkTo(methodOn(UserController.class).findById(user.getUserId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).userCerts(user.getUserId())).withRel("certs"),
+                        linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
+                        linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"),
                         linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("users")))
                 .collect(Collectors.toList());
 
