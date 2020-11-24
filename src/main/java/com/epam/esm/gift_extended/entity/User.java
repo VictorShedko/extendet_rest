@@ -13,6 +13,8 @@ import javax.persistence.Id;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class User extends RepresentationModel<User> implements Serializable {
 
@@ -21,6 +23,7 @@ public class User extends RepresentationModel<User> implements Serializable {
     private Integer userId;
     @Column(unique = true)
     private String name;
+    @JsonIgnore
     private String password;
     @Enumerated
     private Role role;
