@@ -49,13 +49,16 @@ public class UserService implements GiftService<User> {
 
     @Override
     public void save(User user) {
+        String encoded=passwordEncoder.encode(user.getPassword());
+        user.setPassword(encoded);
         repository.save(user);
     }
 
     public void save(RegistrationRequest request) {
         User user = new User();
         user.setName(request.getUsername());
-        user.setPassword(request.getPassword());
+        String encoded=passwordEncoder.encode(request.getPassword());
+        user.setPassword(encoded);
         user.setRole(Role.USER);
         repository.save(user);
     }

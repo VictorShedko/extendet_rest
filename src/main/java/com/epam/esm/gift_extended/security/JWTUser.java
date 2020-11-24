@@ -8,12 +8,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.epam.esm.gift_extended.entity.Role;
 
-public class JWTUser implements UserDetails  {
+public class JWTUser implements UserDetails {
+
     private String username;
     private String password;
     private Integer id;
     private Role role;
     private List<? extends GrantedAuthority> authorities;
+
+    public List<Integer> getCertIds() {
+        return certIds;
+    }
+
+    public void setCertIds(List<Integer> certIds) {
+        this.certIds = certIds;
+    }
+
+    private List<Integer> certIds;
 
     public Role getRole() {
         return role;

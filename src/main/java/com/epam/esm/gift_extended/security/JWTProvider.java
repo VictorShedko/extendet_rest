@@ -13,18 +13,22 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWTProvider {
+    private static final Long ONE_MINUTE =60_000L;
+
     @Value("$(jwt.secret)")
     private String jwtSecret;
 
     public String generateToken(String login) {
-        Date date = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date date = new Date();
+        long t = date.getTime();
+        Date expirationTime = new Date(t + ONE_MINUTE*15);
+
         return Jwts.builder()
                 .setSubject(login)
-                .setExpiration(date)
+                .setExpiration(expirationTime)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
-
 
     public boolean validateToken(String token) {
         try {

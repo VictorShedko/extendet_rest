@@ -19,7 +19,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.epam.esm.gift_extended.security.JWTProvider;
 import com.epam.esm.gift_extended.security.JWTUser;
 import com.epam.esm.gift_extended.security.JWTUserDetailsService;
-import com.epam.esm.gift_extended.security.UserIdInURIValidator;
+import com.epam.esm.gift_extended.security.UserDataAccessURIValidator;
 
 import lombok.extern.java.Log;
 
@@ -29,14 +29,14 @@ public class JWTFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION = "Authorization";
 
-    private UserIdInURIValidator userIdInURIValidator;
+    private UserDataAccessURIValidator userIdInURIValidator;
 
     private JWTProvider jwtProvider;
 
     private JWTUserDetailsService userDetailsService;
 
     @Autowired
-    public void setUserIdInURIValidator(UserIdInURIValidator userIdInURIValidator) {
+    public void setUserIdInURIValidator(UserDataAccessURIValidator userIdInURIValidator) {
         this.userIdInURIValidator = userIdInURIValidator;
     }
 
@@ -61,9 +61,9 @@ public class JWTFilter extends GenericFilterBean {
             String userLogin = jwtProvider.getLoginFromToken(token);
             String url = httpServletRequest.getRequestURI();
             JWTUser customUserDetails = userDetailsService.loadUserByUsername(userLogin);
-            if (userIdInURIValidator.validate(url, customUserDetails.getId(), customUserDetails.getRole())) {
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null,
-                        customUserDetails.getAuthorities());
+            if (userIdInURIValidator.validate(url,customUserDetails)) {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails,
+                        null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
