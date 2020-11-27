@@ -3,28 +3,28 @@ package com.epam.esm.gift_extended.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.UserRepository;
+import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
+import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Service
 public class UserService implements GiftService<User> {
 
-    @Autowired
-    private CertificateService certificateService;
+    private final CertificateService certificateService;
+
+    private final UserRepositoryImpl repository;
 
     @Autowired
-    private UserRepository repository;
+    public UserService(UserRepositoryImpl repository, CertificateService certificateService) {
+        this.repository = repository;
+        this.certificateService = certificateService;
+    }
 
     @Override
     public void save(User user) {
@@ -34,7 +34,7 @@ public class UserService implements GiftService<User> {
     @Transactional
     @Override
     public void delete(Integer userId) {
-        repository.findById(userId).ifPresent(user -> repository.delete(user));
+        repository.findById(userId).ifPresent(repository::delete);
     }
 
     @Override
@@ -42,34 +42,41 @@ public class UserService implements GiftService<User> {
         return repository.findAll();
     }
 
+    @Override
+    public long countEntities() {
+        return repository.count();
+    }
 
     @Override
-    public Page<User> allWithPagination(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size,Sort.by("name"));
+    public boolean isExist(User user) {
+        return repository.isExist(user);
+    }
+
+    @Override
+    public List<User> allWithPagination(int page, int size, String sort) {
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
         return repository.findAll(pageable);
     }
 
     @Override
     public User findById(Integer id) {
-        return repository.findById(id).orElseThrow(()->new ResourceNotFoundedException("user",id.toString()));
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("user id ", id.toString()));
     }
 
     @Transactional
     public void makeOrder(Integer certId, Integer userId) {
-        repository.findById(userId).ifPresent(user -> {
-             certificateService.setHolder(certId, user);
-        });
+        repository.findById(userId).ifPresent(user -> certificateService.setHolder(certId, user));
     }
 
     public User findRichestByOrderPriceSum() {
         return repository.findRichestByOrderPriceSum().orElseThrow();
     }
 
-    public User findByName(String name){
-        return repository.findByName(name).orElseThrow();
+    public User findByName(String name) {
+        return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundedException("user name ", name));
     }
 
-    public List<User> findByPartOfName(String pattern){
+    public List<User> findByPartOfName(String pattern) {
         return repository.findByNameContains(pattern);
     }
 }

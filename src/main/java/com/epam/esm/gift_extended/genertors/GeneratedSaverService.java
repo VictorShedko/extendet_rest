@@ -8,21 +8,22 @@ import org.springframework.stereotype.Service;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.repository.CertificateRepository;
+import com.epam.esm.gift_extended.repository.CertificateRepositoryImpl;
 import com.epam.esm.gift_extended.repository.TagRepository;
-import com.epam.esm.gift_extended.repository.UserRepository;
+import com.epam.esm.gift_extended.repository.TagRepositoryImpl;
+import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
 
 @Service
 public class GeneratedSaverService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryImpl userRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private TagRepositoryImpl tagRepository;
 
     @Autowired
-    private CertificateRepository certificateRepository;
+    private CertificateRepositoryImpl certificateRepository;
 
     public void saveToRepo(List<User> users, List<Tag> tags, List<Certificate> certificates) {
         users.forEach(user -> userRepository.save(user));

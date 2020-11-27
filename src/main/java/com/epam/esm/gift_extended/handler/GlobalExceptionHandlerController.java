@@ -17,7 +17,7 @@ public class GlobalExceptionHandlerController extends ResponseEntityExceptionHan
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleGiftException(Exception ce, WebRequest request) {
-        System.err.println(ce);
+        ce.printStackTrace();
         JSONExceptionEntity entity = ErrorMassageByException.createJSONExceptionEntity(ce);
         return new ResponseEntity<>(entity, new HttpHeaders(), entity.getStatus());
     }

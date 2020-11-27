@@ -1,8 +1,5 @@
 package com.epam.esm.gift_extended.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +11,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class UserRepositoryTest {
 
     @Autowired
-    private CertificateRepository certificateRepository;
+    private CertificateRepositoryImpl certificateRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private TagRepositoryImpl tagRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryImpl userRepository;
     private boolean isConfigured;
 
-    @BeforeEach
-    public void cofigure(){
-        if(!isConfigured){
-            RepositoryTestUtil.configure(tagRepository,userRepository, certificateRepository);
-            isConfigured=true;
-        }
-    }
 
 
 

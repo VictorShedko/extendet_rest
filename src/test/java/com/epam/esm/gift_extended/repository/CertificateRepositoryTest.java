@@ -5,27 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.epam.esm.gift_extended.entity.Certificate;
-import com.epam.esm.gift_extended.entity.User;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -58,20 +50,8 @@ class CertificateRepositoryTest {
     private CertificateRepository certificateRepository;
 
     @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Transactional
-    @BeforeEach
-    public void cofigure() {
-
-        RepositoryTestUtil.configure(tagRepository, userRepository, certificateRepository);
-        isConfigured = true;
-
-    }
-
+/*
     @Transactional
     @AfterEach
     @DatabaseSetup("db.xml")
@@ -158,22 +138,6 @@ class CertificateRepositoryTest {
         assertEquals(2, certificates.size());
     }
 
-    @Transactional
-    @Test
-    void findByTags() {
-        List<Certificate> list = new ArrayList();
-        certificateRepository.findDistinctByTags(RepositoryTestUtil.tag2).forEach(list::add);
-        assertEquals(2, list.size());
-    }
-
-    @Transactional
-    @Test
-    void findByContainsAllNames() {
-        Iterable<Certificate> certificates = certificateRepository.findByContainsAllTagNames(
-                List.of(RepositoryTestUtil.tag1, RepositoryTestUtil.tag2));
-        assertTrue(certificates.iterator().hasNext());
-        assertEquals(certificates.iterator().next(), RepositoryTestUtil.certificate1);
-    }
 
     @Transactional
     @Test
@@ -184,5 +148,5 @@ class CertificateRepositoryTest {
         certificates = new ArrayList<>(
                 certificateRepository.findDistinctByDescriptionContainingAndNameContaining("t1", "not exist"));
         assertEquals(1, certificates.size());
-    }
+    }*/
 }
