@@ -57,7 +57,7 @@ public class TagService implements GiftService<Tag> {
 
     public List<Tag> tags(int certId, Integer page, Integer size, String sort) {
         PageSortInfo pageable = PageSortInfo.of(page, size, sort);
-        return repository.findByCert(certId,pageable);
+        return repository.findByCert(certId, pageable);
     }
 
     public Optional<Tag> findByName(String name) {

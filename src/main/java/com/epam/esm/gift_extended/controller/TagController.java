@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -103,7 +101,7 @@ public class TagController {
             links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size, sort)).withRel("next"));
         }
         links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
-        links.add(linkTo(methodOn(CertificateController.class).allPaged((int)all, size, sort)).withRel("last"));
+        links.add(linkTo(methodOn(CertificateController.class).allPaged((int) all, size, sort)).withRel("last"));
         links.add(linkTo(methodOn(TagController.class).allPaged(page, size, sort)).withSelfRel());
         return attachLinksToList(tags, links);
     }

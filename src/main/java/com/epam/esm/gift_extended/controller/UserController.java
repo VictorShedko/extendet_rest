@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.epam.esm.gift_extended.entity.Order;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.service.CertificateService;
 import com.epam.esm.gift_extended.service.UserService;

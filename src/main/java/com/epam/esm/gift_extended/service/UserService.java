@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.UserRepository;
-import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Service
@@ -58,8 +57,7 @@ public class UserService implements GiftService<User> {
 
     @Transactional
     public void makeOrder(Integer certId, Integer userId) {
-        repository.findById(userId).ifPresent(user ->
-                certificateService.setHolder(certId, user));
+        repository.findById(userId).ifPresent(user -> certificateService.setHolder(certId, user));
     }
 
     public User findRichestByOrderPriceSum() {
@@ -78,6 +76,6 @@ public class UserService implements GiftService<User> {
 
     public List<User> findByPartOfName(String pattern, Integer page, Integer size, String sort) {
         PageSortInfo pageable = PageSortInfo.of(page, size, sort);
-        return repository.findByNameContains(pattern,pageable);
+        return repository.findByNameContains(pattern, pageable);
     }
 }

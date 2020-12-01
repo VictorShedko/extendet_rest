@@ -47,7 +47,7 @@ public class CertificateController {
             links.add(linkTo(methodOn(CertificateController.class).allPaged(page + 1, size, sort)).withRel("next"));
         }
         links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
-        links.add(linkTo(methodOn(CertificateController.class).allPaged((int)all, size, sort)).withRel("last"));
+        links.add(linkTo(methodOn(CertificateController.class).allPaged((int) all, size, sort)).withRel("last"));
         links.add(linkTo(methodOn(CertificateController.class).allPaged(page, size, sort)).withSelfRel());
 
         return attachLinksToList(certificateService.allWithPagination(page, size, sort), links);
@@ -58,7 +58,6 @@ public class CertificateController {
 
         return attachCertLinks(certificateService.findById(id));
     }
-
 
     @GetMapping(value = "/byTagsName")
     public CollectionModel<EntityModel<Certificate>> byTagNames(@RequestParam List<String> tagNames,
@@ -74,10 +73,9 @@ public class CertificateController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String sort) {
-        return attachLinksToList(certificateService.searchByAnyString(pattern, page, size, sort),List.of(linkTo(
-                methodOn(CertificateController.class).find(pattern, page, size, sort)).withSelfRel()));
+        return attachLinksToList(certificateService.searchByAnyString(pattern, page, size, sort),
+                List.of(linkTo(methodOn(CertificateController.class).find(pattern, page, size, sort)).withSelfRel()));
     }
-
 
     @GetMapping(value = "/findByUserAndTag")
     public CollectionModel<EntityModel<Certificate>> findByUserAndTag(@RequestParam Integer userId,
@@ -106,7 +104,6 @@ public class CertificateController {
         certificateService.delete(certificateId);
     }
 
-
     @GetMapping(value = "/{userId}/user")
     public CollectionModel<EntityModel<Certificate>> userCerts(@PathVariable int userId,
             @RequestParam(required = false, defaultValue = "0") Integer page,
@@ -122,6 +119,7 @@ public class CertificateController {
         if (cert.getHolder() != null) {
             cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"));
         }
+        cert.add(linkTo(methodOn(CertificateController.class).findById(cert.getId())).withRel("cert detail"));
         return cert;
     }
 

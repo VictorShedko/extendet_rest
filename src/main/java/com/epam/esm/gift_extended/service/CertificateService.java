@@ -22,7 +22,6 @@ import com.epam.esm.gift_extended.exception.EntityAlreadyAssignedException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.CertificateRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
-import com.epam.esm.gift_extended.service.util.SortDirection;
 
 @Service
 public class CertificateService implements GiftService<Certificate> {
@@ -73,7 +72,7 @@ public class CertificateService implements GiftService<Certificate> {
                 (base, patch) -> base.setCreationTime(patch.getCreationTime()));
         giftCertificateUpdateMap.put(cert -> cert.getHolder() != null,
                 (base, patch) -> base.setHolder(patch.getHolder()));
-        giftCertificateUpdateMap.put(cert -> cert.getTags() != null && cert.getTags().size()>0, (base, patch) -> {
+        giftCertificateUpdateMap.put(cert -> cert.getTags() != null && cert.getTags().size() > 0, (base, patch) -> {
             base.setTags(patch.getTags().stream().map(tag -> {
                 if (!tagService.isExist(tag)) {
                     tagService.save(tag);
