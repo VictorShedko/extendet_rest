@@ -32,6 +32,8 @@ public class Certificate extends RepresentationModel<Certificate> implements Ser
     private Date creationTime;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'.'SZ")
     private Date updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'.'SZ")
+    private Date orderTime;
     private Integer duration;
 
     @ManyToOne
@@ -56,6 +58,14 @@ public class Certificate extends RepresentationModel<Certificate> implements Ser
         this.updateTime = updateTime;
         this.duration = duration;
 
+    }
+
+    public Date getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
     }
 
     public List<Tag> getTags() {

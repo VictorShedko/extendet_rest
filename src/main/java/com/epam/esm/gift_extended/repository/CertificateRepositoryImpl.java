@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.Certificate;
@@ -79,7 +78,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag) {
         Query query = manager.createQuery(
-                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by cert.name");
+                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by C.name");
         query.setParameter("user", holder);
         query.setParameter("tag", tag);
         return query.getResultList();
@@ -88,7 +87,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag, PageSortInfo pageable) {
         Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
-                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by cert.name");
+                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by C.name");
         query.setParameter("user", holder);
         query.setParameter("tag", tag);
         return query.getResultList();

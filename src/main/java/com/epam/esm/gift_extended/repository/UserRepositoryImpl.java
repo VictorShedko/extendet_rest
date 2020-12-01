@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.User;

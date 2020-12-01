@@ -19,7 +19,8 @@ public enum ErrorMassageByException {
                 + " requested value is " + ((ResourceNotFoundedException) ex).getRequestedValues();
     }, HttpStatus.NOT_FOUND), DATA_INTEGRITY(8, DataIntegrityViolationException.class,
             exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST), BAD_PAGINATION(9,
-            BadPaginationException.class, Throwable::getMessage, HttpStatus.BAD_REQUEST);
+            BadPaginationException.class, Throwable::getMessage, HttpStatus.BAD_REQUEST), ALREADY_BOUGHT(10,
+            EntityAlreadyAssignedException.class, Throwable::getMessage, HttpStatus.CONFLICT);
 
     private final int code;
     private final Class<? extends Exception> exceptionClass;

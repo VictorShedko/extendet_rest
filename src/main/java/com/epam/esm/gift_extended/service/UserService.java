@@ -58,7 +58,8 @@ public class UserService implements GiftService<User> {
 
     @Transactional
     public void makeOrder(Integer certId, Integer userId) {
-        repository.findById(userId).ifPresent(user -> certificateService.setHolder(certId, user));
+        repository.findById(userId).ifPresent(user ->
+                certificateService.setHolder(certId, user));
     }
 
     public User findRichestByOrderPriceSum() {

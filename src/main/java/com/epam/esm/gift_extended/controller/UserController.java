@@ -20,12 +20,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.service.CertificateService;
 import com.epam.esm.gift_extended.service.UserService;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private UserService service;
+    private CertificateService certificateService;
+
+    @Autowired
+    public void setCertificateService(CertificateService certificateService) {
+        this.certificateService = certificateService;
+    }
 
     @Autowired
     public void setService(UserService service) {
@@ -52,6 +59,8 @@ public class UserController {
         if (page < all) {
             links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size,sort)).withRel("next"));
         }
+        links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
+        links.add(linkTo(methodOn(CertificateController.class).allPaged((int)all, size, sort)).withRel("last"));
         links.add(linkTo(methodOn(TagController.class).allPaged(page, size,sort)).withSelfRel());
         return attachLinksToList(users, links);
     }
@@ -87,6 +96,21 @@ public class UserController {
         attachUserLinks(user);
         return user;
     }
+    @GetMapping("/{userId}/orders/")
+    public List<Order> userOrders(@PathVariable Integer userId, @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "asc") String sort) {
+        return certificateService.findCertificatesByUser(userId,page,size,sort).stream().map(certificate -> {
+            Order order=new Order();
+            order.setOrderDate(certificate.getOrderTime());
+            order.setCertId(certificate.getId());
+            order.setCost(certificate.getPrice());
+            return order;
+        }).collect(Collectors.toList());
+
+    }
+
+
 
     @GetMapping("/{pattern}/findByPattern")
     public CollectionModel<EntityModel<User>> findByPattern(@PathVariable String pattern,

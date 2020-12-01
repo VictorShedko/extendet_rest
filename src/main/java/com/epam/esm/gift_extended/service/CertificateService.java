@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.exception.EntityAlreadyAssignedException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.CertificateRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
@@ -28,18 +29,19 @@ public class CertificateService implements GiftService<Certificate> {
 
     private final CertificateRepository repository;
 
-    private  TagService tagService;
+    private TagService tagService;
 
     @Autowired
     public void setTagService(TagService tagService) {
         this.tagService = tagService;
     }
+
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    private  UserService userService;
+    private UserService userService;
 
     @Override
     public Iterable<Certificate> all() {
@@ -59,7 +61,7 @@ public class CertificateService implements GiftService<Certificate> {
     private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     @PostConstruct
-    public void initHashMap(){
+    public void initHashMap() {
         giftCertificateUpdateMap = new HashMap<>();
 
         giftCertificateUpdateMap.put(cert -> cert.getName() != null, (base, patch) -> base.setName(patch.getName()));
@@ -71,11 +73,12 @@ public class CertificateService implements GiftService<Certificate> {
                 (base, patch) -> base.setCreationTime(patch.getCreationTime()));
         giftCertificateUpdateMap.put(cert -> cert.getHolder() != null,
                 (base, patch) -> base.setHolder(patch.getHolder()));
-        giftCertificateUpdateMap.put(cert -> cert.getTags() != null, (base, patch) -> {
+        giftCertificateUpdateMap.put(cert -> cert.getTags() != null && cert.getTags().size()>0, (base, patch) -> {
             base.setTags(patch.getTags().stream().map(tag -> {
                 if (!tagService.isExist(tag)) {
                     tagService.save(tag);
                     return tag;
+
                 } else {
                     return tagService.findByName(tag.getName()).get();
                 }
@@ -100,25 +103,26 @@ public class CertificateService implements GiftService<Certificate> {
     }
 
     public List<Certificate> searchByAnyString(String pattern, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of( page,size, sort);
-        return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern,pageable);
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern, pageable);
     }
 
     public List<Certificate> searchByListOfTagNames(List<String> names, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of( page,size, sort);
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
         List<Tag> tags = names.stream()
                 .map(tagService::findByName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-        return repository.findByContainsAllTagNames(tags,pageable);
+        return repository.findByContainsAllTagNames(tags, pageable);
     }
 
-    public List<Certificate> searchByUserAndTag(Integer tagId, Integer userId, Integer page, Integer size, String sort) {
-        PageSortInfo pageable =  PageSortInfo.of( page,size,sort);
+    public List<Certificate> searchByUserAndTag(Integer tagId, Integer userId, Integer page, Integer size,
+            String sort) {
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
         Tag tag = tagService.findById(tagId);
         User user = userService.findById(userId);
-        return repository.findCertificateByHolderAndTag(user, tag,pageable);
+        return repository.findCertificateByHolderAndTag(user, tag, pageable);
     }
 
     @Override
@@ -169,21 +173,29 @@ public class CertificateService implements GiftService<Certificate> {
 
     @Override
     public List<Certificate> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of( page,size,sort);
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
         return repository.findAll(pageable);
     }
 
     public List<Certificate> findCertificatesByUser(int userId, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of( page,size,sort);
-        return repository.findUserCertificates(userId,pageable);
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        return repository.findUserCertificates(userId, pageable);
     }
 
     @Transactional
     public void setHolder(Integer certId, User user) {
-        repository.findById(certId).ifPresent(cert -> cert.setHolder(user));
+        repository.findById(certId).ifPresent(certificate -> {
+            if (certificate.getHolder() == null) {
+                certificate.setHolder(user);
+                certificate.setOrderTime(new Date());
+            } else {
+                throw new EntityAlreadyAssignedException(
+                        "tag already assigned to user " + certificate.getHolder().getName());
+            }
+        });
     }
 
-    public Certificate findByName(String name){
-        return repository.findByName(name).orElseThrow(()-> new ResourceNotFoundedException("added cert","gen"));
+    public Certificate findByName(String name) {
+        return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundedException("added cert", "gen"));
     }
 }

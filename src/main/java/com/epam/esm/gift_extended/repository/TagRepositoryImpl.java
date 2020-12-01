@@ -52,17 +52,9 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> findByCert(int certId, PageSortInfo pageable) {
-        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
-                "SELECT T FROM Tag T join Certificate C where C.id=:certId order by T.name");
-        query.setParameter("certId", certId);
-        return query.getResultList();
-    }
-
-    @Override
     public List<Tag> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT T FROM Tag as T order by T.name" + pageable.getSortDirection().getTypeAsString());
+                "SELECT T FROM Tag as T order by T.name " + pageable.getSortDirection().getTypeAsString());
         query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
         return query.getResultList();
@@ -97,6 +89,21 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<Tag> findAll() {
         Query query = manager.createQuery("SELECT T FROM Tag as T ");
+        return query.getResultList();
+    }
+
+    public List<Tag> findByCert(int certId) {
+        Query query = manager.createQuery(
+                "SELECT T FROM Certificate C inner join C.tags T where C.id=:certId order by T.name");
+        query.setParameter("certId", certId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Tag> findByCert(int certId, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT T FROM Certificate C inner join C.tags T where C.id=:certId order by T.name");
+        query.setParameter("certId", certId);
         return query.getResultList();
     }
 

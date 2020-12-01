@@ -69,7 +69,7 @@ public class TagController {
         tagService.delete(tagId);
     }
 
-    @GetMapping(value = "/{certId}/tags")
+    @GetMapping(value = "/{certId}/tags/")
     public CollectionModel<EntityModel<Tag>> tags(@PathVariable int certId,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
@@ -102,6 +102,8 @@ public class TagController {
         if (page < all) {
             links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size, sort)).withRel("next"));
         }
+        links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
+        links.add(linkTo(methodOn(CertificateController.class).allPaged((int)all, size, sort)).withRel("last"));
         links.add(linkTo(methodOn(TagController.class).allPaged(page, size, sort)).withSelfRel());
         return attachLinksToList(tags, links);
     }

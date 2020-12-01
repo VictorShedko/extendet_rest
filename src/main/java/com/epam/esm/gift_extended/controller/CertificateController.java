@@ -70,11 +70,12 @@ public class CertificateController {
     }
 
     @GetMapping(value = "/{find}/find")
-    public Iterable<Certificate> find(@PathVariable(name = "find") String pattern,
+    public CollectionModel<EntityModel<Certificate>> find(@PathVariable(name = "find") String pattern,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "asc") String sort) {
-        return certificateService.searchByAnyString(pattern, page, size, sort);
+        return attachLinksToList(certificateService.searchByAnyString(pattern, page, size, sort),List.of(linkTo(
+                methodOn(CertificateController.class).find(pattern, page, size, sort)).withSelfRel()));
     }
 
 
