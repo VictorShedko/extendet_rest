@@ -74,13 +74,6 @@ public class UserController {
         return user;
     }
 
-    @PostMapping(value = "/{userId}/certs")
-    public User setHolder(@PathVariable Integer userId, @RequestBody Integer certId) {
-        service.makeOrder(certId, userId);
-        User user = service.findById(userId);
-        attachUserLinks(user);
-        return user;
-    }
 
     @GetMapping("/richest")
     public User richest() {
@@ -97,20 +90,6 @@ public class UserController {
         attachUserLinks(user);
         return user;
     }
-    @GetMapping("/{userId}/orders/")
-    public List<Order> userOrders(@PathVariable Integer userId, @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false, defaultValue = "asc") String sort) {
-        return certificateService.findCertificatesByUser(userId,page,size,sort).stream().map(certificate -> {
-            Order order=new Order();
-            order.setOrderDate(certificate.getOrderTime());
-            order.setCertId(certificate.getId());
-            order.setCost(certificate.getPrice());
-            return order;
-        }).collect(Collectors.toList());
-
-    }
-
 
 
     @GetMapping("/{pattern}/findByPattern")

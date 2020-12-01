@@ -7,8 +7,6 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 public interface GiftRepository<T> {
 
-    Optional<T> findByName(String name);
-
     List<T> findAll(PageSortInfo pageable);
 
     <S extends T> S save(S s);

@@ -10,6 +10,8 @@ public interface UserRepository extends GiftRepository<User> {
 
     Optional<User> findRichestByOrderPriceSum();
 
+    Optional<User> findByName(String name);
+
     List<User> findByNameContains(String partOfName);
 
     List<User> findByNameContains(String pattern, PageSortInfo pageable);

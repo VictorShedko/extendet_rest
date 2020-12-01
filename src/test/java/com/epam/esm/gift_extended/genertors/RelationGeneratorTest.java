@@ -24,7 +24,7 @@ class RelationGeneratorTest {
 
         relationGenerator.MakeRelation(users,certificates,tags);
 
-        assertNotEquals(null,certificates.get(0).getHolder());
+
         assertNotEquals(0,certificates.get(0).getTags().size());
     }
 }

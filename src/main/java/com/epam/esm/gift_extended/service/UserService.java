@@ -55,11 +55,6 @@ public class UserService implements GiftService<User> {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("user id ", id.toString()));
     }
 
-    @Transactional
-    public void makeOrder(Integer certId, Integer userId) {
-        repository.findById(userId).ifPresent(user -> certificateService.setHolder(certId, user));
-    }
-
     public User findRichestByOrderPriceSum() {
         return repository.findRichestByOrderPriceSum().orElseThrow();
     }

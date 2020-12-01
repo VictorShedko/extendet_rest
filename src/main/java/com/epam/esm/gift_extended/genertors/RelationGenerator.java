@@ -16,7 +16,7 @@ public class RelationGenerator {
         certificates.forEach(cert -> {
             if (RandomUtil.getBooleanWithTrueProbability(CERT_HOLDER_CHANCE)) {
                 User user = RandomUtil.getRandomElementFromList(users);
-                cert.setHolder(user);
+
                 cert.setDescription("cert along to " + user.getName());
             } else {
                 cert.setDescription("cert without holder");

@@ -12,8 +12,6 @@ import com.epam.esm.gift_extended.genertors.GeneratedSaverService;
 @SpringBootApplication
 @EnableTransactionManagement
 public class GiftExtendedApplication {
-
-
     public static void main(String[] args) {
         SpringApplication.run(GiftExtendedApplication.class, args);
     }

@@ -31,7 +31,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findUserCertificates(Integer userId) {
         Query query = manager.createQuery(
-                "SELECT cert " + "FROM Certificate cert " + "WHERE cert.holder.id = :id order by cert.name");
+                "SELECT cert FROM Order  O join O.customer customer join O.certificates cert WHERE customer.id=:id order by cert.name");
         query.setParameter("id", userId);
         return query.getResultList();
     }
@@ -39,7 +39,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findUserCertificates(int userId, PageSortInfo pageable) {
         Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
-                "SELECT cert " + "FROM Certificate cert " + "WHERE cert.holder.id = :id  order by cert.name");
+                "SELECT cert FROM Order  O join O.customer customer join O.certificates cert WHERE customer.id=:id order by cert.name");
         query.setParameter("id", userId);
         return query.getResultList();
     }
@@ -78,7 +78,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag) {
         Query query = manager.createQuery(
-                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by C.name");
+                "SELECT C FROM Order O join O.customer cust JOIN O.certificates C join C.tags as T WHERE T=:tag and cust=:user  order by C.name");
         query.setParameter("user", holder);
         query.setParameter("tag", tag);
         return query.getResultList();
@@ -87,7 +87,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag, PageSortInfo pageable) {
         Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
-                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user  order by C.name");
+                "SELECT C FROM Order O join O.customer cust JOIN O.certificates C join C.tags as T WHERE T=:tag and cust=:user  order by C.name");
         query.setParameter("user", holder);
         query.setParameter("tag", tag);
         return query.getResultList();

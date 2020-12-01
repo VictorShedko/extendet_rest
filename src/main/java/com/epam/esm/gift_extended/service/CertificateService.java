@@ -62,7 +62,6 @@ public class CertificateService implements GiftService<Certificate> {
     @PostConstruct
     public void initHashMap() {
         giftCertificateUpdateMap = new HashMap<>();
-
         giftCertificateUpdateMap.put(cert -> cert.getName() != null, (base, patch) -> base.setName(patch.getName()));
         giftCertificateUpdateMap.put(cert -> cert.getDuration() != null,
                 (base, patch) -> base.setDuration(patch.getDuration()));
@@ -70,14 +69,11 @@ public class CertificateService implements GiftService<Certificate> {
                 (base, patch) -> base.setDescription(patch.getDescription()));
         giftCertificateUpdateMap.put(cert -> cert.getCreationTime() != null,
                 (base, patch) -> base.setCreationTime(patch.getCreationTime()));
-        giftCertificateUpdateMap.put(cert -> cert.getHolder() != null,
-                (base, patch) -> base.setHolder(patch.getHolder()));
         giftCertificateUpdateMap.put(cert -> cert.getTags() != null && cert.getTags().size() > 0, (base, patch) -> {
             base.setTags(patch.getTags().stream().map(tag -> {
                 if (!tagService.isExist(tag)) {
                     tagService.save(tag);
                     return tag;
-
                 } else {
                     return tagService.findByName(tag.getName()).get();
                 }
@@ -181,18 +177,7 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.findUserCertificates(userId, pageable);
     }
 
-    @Transactional
-    public void setHolder(Integer certId, User user) {
-        repository.findById(certId).ifPresent(certificate -> {
-            if (certificate.getHolder() == null) {
-                certificate.setHolder(user);
-                certificate.setOrderTime(new Date());
-            } else {
-                throw new EntityAlreadyAssignedException(
-                        "tag already assigned to user " + certificate.getHolder().getName());
-            }
-        });
-    }
+
 
     public Certificate findByName(String name) {
         return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundedException("added cert", "gen"));

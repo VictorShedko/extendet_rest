@@ -1,6 +1,7 @@
 package com.epam.esm.gift_extended.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
@@ -12,6 +13,8 @@ public interface CertificateRepository extends GiftRepository<Certificate> {
     List<Certificate> findUserCertificates(Integer userId);
 
     List<Certificate> findByContainsAllTagNames(List<Tag> tags);
+
+    Optional<Certificate> findByName(String name);
 
     List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag);
 

@@ -116,9 +116,6 @@ public class CertificateController {
 
     private Certificate attachCertLinks(Certificate cert) {
         cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("All Certs"));
-        if (cert.getHolder() != null) {
-            cert.add(linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"));
-        }
         cert.add(linkTo(methodOn(CertificateController.class).findById(cert.getId())).withRel("cert detail"));
         return cert;
     }
@@ -127,19 +124,11 @@ public class CertificateController {
             List<Link> thisLinks) {
         List<Certificate> CertsAsList = new ArrayList<>();
         certs.forEach(CertsAsList::add);
-        Iterable<EntityModel<Certificate>> resultCerts = CertsAsList.stream().map(cert -> {
-            if (cert.getHolder() != null) {
-                return EntityModel.of(cert,
+        Iterable<EntityModel<Certificate>> resultCerts = CertsAsList.stream()
+                .map(cert -> EntityModel.of(cert,
                         linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
-                        linkTo(methodOn(UserController.class).findById(cert.getHolder().getId())).withRel("holder"),
-                        linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("Certs"));
-            } else {
-                return EntityModel.of(cert,
-                        linkTo(methodOn(CertificateController.class).findById(cert.getId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("Certs"));
-            }
-
-        }).collect(Collectors.toList());
+                        linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("Certs")))
+                .collect(Collectors.toList());
 
         return CollectionModel.of(resultCerts, thisLinks);
     }
