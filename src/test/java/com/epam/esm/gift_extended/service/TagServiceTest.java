@@ -16,8 +16,8 @@ import org.mockito.MockitoAnnotations;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.repository.CertificateRepositoryImpl;
 import com.epam.esm.gift_extended.repository.TagRepositoryImpl;
+import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 class TagServiceTest {
     private static User user = new User();
@@ -26,6 +26,9 @@ class TagServiceTest {
     private static Tag tag1 = new Tag();
     private static Tag tag2 = new Tag();
     private static List<Certificate> allCerts = List.of(testCert1, testCert2);
+    public int page=0;
+    public int size=10;
+    public String sort="";
 
     static {
         testCert1.setId(1);
@@ -103,8 +106,8 @@ class TagServiceTest {
         Certificate certificate=new Certificate();
         List<Tag> tags=List.of(tag1,tag2);
         certificate.setTags(tags);
-        Mockito.when(certificateService.findById(1)).thenReturn(testCert1);
-        assertEquals(service.tags(1),tags);
+        Mockito.when(tagRepository.findByCert(1,Mockito.any())).thenReturn(tags);
+        assertEquals(service.tags(1, page, size, sort),tags);
     }
 
     @Test

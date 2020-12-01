@@ -18,12 +18,13 @@ public enum ErrorMassageByException {
         return "Resource not founded requested resource is " + ((ResourceNotFoundedException) ex).getResourceName()
                 + " requested value is " + ((ResourceNotFoundedException) ex).getRequestedValues();
     }, HttpStatus.NOT_FOUND), DATA_INTEGRITY(8, DataIntegrityViolationException.class,
-            exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST);
+            exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST), BAD_PAGINATION(9,
+            BadPaginationException.class, Throwable::getMessage, HttpStatus.BAD_REQUEST);
 
-    private int code;
-    private Class<? extends Exception> exceptionClass;
-    private Function<Exception, String> messageBuilder;
-    private HttpStatus status;
+    private final int code;
+    private final Class<? extends Exception> exceptionClass;
+    private final Function<Exception, String> messageBuilder;
+    private final HttpStatus status;
 
     ErrorMassageByException(int i, Class<? extends Exception> exceptionClass,
             Function<Exception, String> messageBuilder, HttpStatus status) {

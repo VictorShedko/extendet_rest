@@ -26,6 +26,9 @@ class CertificateServiceTest {
     private static Certificate testCert2 = new Certificate();
     private static Tag tag1 = new Tag();
     private static List<Certificate> allCerts = List.of(testCert1, testCert2);
+    public int page=0;
+    public int size=10;
+    public String sort="";
 
     static {
         testCert1.setId(1);
@@ -78,7 +81,7 @@ class CertificateServiceTest {
         Mockito.when(certificateRepository.findDistinctByDescriptionContainingAndNameContaining("te", "te"))
                 .thenReturn(allCerts);
 
-        Iterable<Certificate> certificates = service.searchByAnyString("te");
+        Iterable<Certificate> certificates = service.searchByAnyString("te", page, size, sort);
         assertEquals(certificates, allCerts);
     }
 
@@ -89,7 +92,7 @@ class CertificateServiceTest {
         Mockito.when(tagService.findByName(Mockito.any())).thenReturn(Optional.of(t));
         Mockito.when(certificateRepository.findByContainsAllTagNames(Mockito.any())).thenReturn(List.of(testCert1));
         List<String> strings=List.of("1","2","3");
-        List<Certificate> certificates=service.searchByListOfTagNames(strings);
+        List<Certificate> certificates=service.searchByListOfTagNames(strings, page, size, sort);
         assertEquals(1,certificates.size());
         assertEquals(testCert1,certificates.get(0));
     }
@@ -99,7 +102,7 @@ class CertificateServiceTest {
         Mockito.when(tagService.findById(1)).thenReturn(tag1);
         Mockito.when(certificateRepository.findCertificateByHolderAndTag(user,tag1)).thenReturn(List.of(testCert1));
         Mockito.when(userService.findById(2)).thenReturn(user);
-        List<Certificate> certificates=service.searchByUserAndTag(1,2);
+        List<Certificate> certificates=service.searchByUserAndTag(1,2, page, size, sort);
         assertEquals(certificates.get(0),testCert1);
 
     }
@@ -165,7 +168,7 @@ class CertificateServiceTest {
     void findCertificatesByUser() {
         List list=List.of(testCert1);
         Mockito.when(certificateRepository.findUserCertificates(1)).thenReturn(list);
-        assertEquals(list,service.findCertificatesByUser(1));
+        assertEquals(list,service.findCertificatesByUser(1, page, size, sort));
 
     }
 

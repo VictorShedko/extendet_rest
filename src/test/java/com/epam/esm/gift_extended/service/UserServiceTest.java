@@ -15,8 +15,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
 import com.epam.esm.gift_extended.repository.UserRepository;
 
 class UserServiceTest {
@@ -27,6 +25,9 @@ class UserServiceTest {
     private static User user2 = new User();
     
     private static List<Certificate> allCerts = List.of(testCert1, testCert2);
+    public int page=0;
+    public int size=10;
+    public String sort="";
 
     static {
         testCert1.setId(1);
@@ -80,7 +81,7 @@ class UserServiceTest {
     void findByPartOfName() {
         List<User> list=List.of(user1,user2);
         Mockito.when(userRepository.findByNameContains("test")).thenReturn(list);
-        assertEquals(list,service.findByPartOfName("test"));
+        assertEquals(list,service.findByPartOfName("test", page, size, sort));
     }
 
     @Test

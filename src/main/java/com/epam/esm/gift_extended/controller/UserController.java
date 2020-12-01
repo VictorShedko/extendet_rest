@@ -25,9 +25,12 @@ import com.epam.esm.gift_extended.service.UserService;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private UserService service;
 
     @Autowired
-    private UserService service;
+    public void setService(UserService service) {
+        this.service = service;
+    }
 
     @PostMapping(value = "/")
     public User add(@RequestBody User user) {
@@ -86,14 +89,18 @@ public class UserController {
     }
 
     @GetMapping("/{pattern}/findByPattern")
-    public CollectionModel<EntityModel<User>> findByPattern(@PathVariable String pattern) {
-        return attachLinksToList(service.findByPartOfName(pattern),
-                List.of(linkTo(methodOn(UserController.class).findByPattern(pattern)).withSelfRel()));
+    public CollectionModel<EntityModel<User>> findByPattern(@PathVariable String pattern,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "asc") String sort) {
+        return attachLinksToList(service.findByPartOfName(pattern,page,size,sort),
+                List.of(linkTo(methodOn(UserController.class).findByPattern(pattern,page,size,sort)).withSelfRel()));
     }
 
     private User attachUserLinks(User user) {
         user.add(linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("All users"));
-        user.add(linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"));
+        user.add(linkTo(methodOn(CertificateController.class).userCerts(user.getId(),0,10,"")).withRel("certs"));
+        user.add(linkTo(methodOn(UserController.class).findById(user.getId())).withRel("user detail"));
         return user;
     }
 
@@ -103,7 +110,7 @@ public class UserController {
         Iterable<EntityModel<User>> resultUsers = usersAsList.stream()
                 .map(user -> EntityModel.of(user,
                         linkTo(methodOn(UserController.class).findById(user.getId())).withSelfRel(),
-                        linkTo(methodOn(CertificateController.class).userCerts(user.getId())).withRel("certs"),
+                        linkTo(methodOn(CertificateController.class).userCerts(user.getId(),0,10,"")).withRel("certs"),
                         linkTo(methodOn(UserController.class).allPaged(0, 10,"asc")).withRel("users")))
                 .collect(Collectors.toList());
 

@@ -99,27 +99,29 @@ public class CertificateService implements GiftService<Certificate> {
         return base;
     }
 
-    public List<Certificate> searchByAnyString(String pattern) {
-        return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern);
+    public List<Certificate> searchByAnyString(String pattern, Integer page, Integer size, String sort) {
+        PageSortInfo pageable = PageSortInfo.of( page,size, sort);
+        return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern,pageable);
     }
 
-    public List<Certificate> searchByListOfTagNames(List<String> names) {
+    public List<Certificate> searchByListOfTagNames(List<String> names, Integer page, Integer size, String sort) {
+        PageSortInfo pageable = PageSortInfo.of( page,size, sort);
         List<Tag> tags = names.stream()
                 .map(tagService::findByName)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-        return repository.findByContainsAllTagNames(tags);
+        return repository.findByContainsAllTagNames(tags,pageable);
     }
 
-    public List<Certificate> searchByUserAndTag(Integer tagId, Integer userId) {
+    public List<Certificate> searchByUserAndTag(Integer tagId, Integer userId, Integer page, Integer size, String sort) {
+        PageSortInfo pageable =  PageSortInfo.of( page,size,sort);
         Tag tag = tagService.findById(tagId);
         User user = userService.findById(userId);
-        return repository.findCertificateByHolderAndTag(user, tag);
+        return repository.findCertificateByHolderAndTag(user, tag,pageable);
     }
 
     @Override
-
     public Certificate findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundedException("cert ", id.toString()));
     }
@@ -167,16 +169,21 @@ public class CertificateService implements GiftService<Certificate> {
 
     @Override
     public List<Certificate> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = new PageSortInfo( page,size, SortDirection.getByStringOrDefault(sort));
+        PageSortInfo pageable = PageSortInfo.of( page,size,sort);
         return repository.findAll(pageable);
     }
 
-    public List<Certificate> findCertificatesByUser(int userId) {
-        return repository.findUserCertificates(userId);
+    public List<Certificate> findCertificatesByUser(int userId, Integer page, Integer size, String sort) {
+        PageSortInfo pageable = PageSortInfo.of( page,size,sort);
+        return repository.findUserCertificates(userId,pageable);
     }
 
     @Transactional
     public void setHolder(Integer certId, User user) {
         repository.findById(certId).ifPresent(cert -> cert.setHolder(user));
+    }
+
+    public Certificate findByName(String name){
+        return repository.findByName(name).orElseThrow(()-> new ResourceNotFoundedException("added cert","gen"));
     }
 }

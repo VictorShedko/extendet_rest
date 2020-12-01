@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.Tag;
@@ -53,9 +52,17 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
+    public List<Tag> findByCert(int certId, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT T FROM Tag T join Certificate C where C.id=:certId order by T.name");
+        query.setParameter("certId", certId);
+        return query.getResultList();
+    }
+
+    @Override
     public List<Tag> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT T FROM Tag as T order by T.name " + pageable.getSortDirection().getTypeAsString());
+                "SELECT T FROM Tag as T order by T.name" + pageable.getSortDirection().getTypeAsString());
         query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
         query.setMaxResults(pageable.getPageSize());
         return query.getResultList();

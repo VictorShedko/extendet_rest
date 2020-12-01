@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,7 @@ public class Certificate extends RepresentationModel<Certificate> implements Ser
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @Column(unique = true)
     private String name;
     private String description;
     private Float price;

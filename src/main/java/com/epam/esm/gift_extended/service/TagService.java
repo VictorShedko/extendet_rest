@@ -17,13 +17,6 @@ public class TagService implements GiftService<Tag> {
 
     private final TagRepository repository;
 
-    private CertificateService certificateService;
-
-    @Autowired
-    public void setCertificateService(CertificateService certificateService) {
-        this.certificateService = certificateService;
-    }
-
     @Autowired
     public TagService(TagRepository repository) {
         this.repository = repository;
@@ -62,8 +55,9 @@ public class TagService implements GiftService<Tag> {
         tagToDelete.ifPresent(repository::delete);
     }
 
-    public List<Tag> tags(int certId) {
-        return certificateService.findById(certId).getTags();
+    public List<Tag> tags(int certId, Integer page, Integer size, String sort) {
+        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        return repository.findByCert(certId,pageable);
     }
 
     public Optional<Tag> findByName(String name) {

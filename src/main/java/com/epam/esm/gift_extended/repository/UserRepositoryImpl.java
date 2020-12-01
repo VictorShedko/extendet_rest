@@ -54,17 +54,23 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByNameContains(String partOfName) {
-        Query query = manager.createQuery("SELECT U FROM User as U WHERE U.name like :name");
+        Query query = manager.createQuery("SELECT U FROM User as U WHERE U.name like :name order by U.name");
         query.setParameter("name", "%" + partOfName + "%");
         return query.getResultList();
     }
 
     @Override
+    public List<User> findByNameContains(String pattern, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT U FROM User as U WHERE U.name like :name order by U.name");
+        query.setParameter("name", "%" + pattern + "%");
+        return query.getResultList();
+    }
+
+    @Override
     public List<User> findAll(PageSortInfo pageable) {
-        Query query = manager.createQuery(
-                "SELECT U FROM User as U order by U.name " + pageable.getSortDirection().getTypeAsString());
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT U FROM User as U order by U.name ");
         return query.getResultList();
     }
 

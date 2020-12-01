@@ -20,7 +20,7 @@ public interface GiftService<T> {
     long countEntities();
 
     default long pages(long size){
-        return countEntities()+1/size;
+        return (countEntities()+1)/size;
     }
 
     boolean isExist(T t);
