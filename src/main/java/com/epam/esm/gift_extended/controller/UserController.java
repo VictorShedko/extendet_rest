@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.epam.esm.gift_extended.entity.Order;
+import com.epam.esm.gift_extended.entity.RegistrationRequest;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.service.CertificateService;
 import com.epam.esm.gift_extended.service.UserService;
@@ -107,6 +108,26 @@ public class UserController {
         user.add(linkTo(methodOn(UserController.class).findById(user.getId())).withRel("user detail"));
         return user;
     }
+
+    //--------
+    //Authentication Endpoints
+    //----------------
+
+    @PostMapping("/register")
+    public void registerUser(@RequestBody RegistrationRequest registrationRequest) {
+        service.save(registrationRequest);
+    }
+
+    @PostMapping("/auth")
+    public String auth(@RequestBody RegistrationRequest request) {
+        String token = service.auth(request);
+        return token;
+    }
+
+    //--------
+    //End of authentication endpoints
+    //----------------
+
 
     private CollectionModel<EntityModel<User>> attachLinksToList(Iterable<User> users, List<Link> thisLinks) {
         List<User> usersAsList = new ArrayList<>();

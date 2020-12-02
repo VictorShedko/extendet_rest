@@ -57,11 +57,12 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.isExist(t);
     }
 
-    private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
+    private final Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     @PostConstruct
     public void initHashMap() {
         giftCertificateUpdateMap = new HashMap<>();
+
         giftCertificateUpdateMap.put(cert -> cert.getName() != null, (base, patch) -> base.setName(patch.getName()));
         giftCertificateUpdateMap.put(cert -> cert.getDuration() != null,
                 (base, patch) -> base.setDuration(patch.getDuration()));
