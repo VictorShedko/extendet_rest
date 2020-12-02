@@ -15,6 +15,8 @@ public class JWTUser implements UserDetails {
     private Integer id;
     private Role role;
     private List<? extends GrantedAuthority> authorities;
+    private List<Integer> certIds;
+
 
     public List<Integer> getCertIds() {
         return certIds;
@@ -23,8 +25,6 @@ public class JWTUser implements UserDetails {
     public void setCertIds(List<Integer> certIds) {
         this.certIds = certIds;
     }
-
-    private List<Integer> certIds;
 
     public Role getRole() {
         return role;

@@ -10,11 +10,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.epam.esm.gift_extended.entity.Role;
 
-
-enum URIsToValidation  {
-    GET_USER_BY_ID(Pattern.compile("^/api/users/[0-9]+/$")),
-    MAKE_ORDER(Pattern.compile("^/api/users/[0-9]+/certs$"))
-    , GET_CERT_BY_ID(
+enum URIsToValidation {
+    GET_USER_BY_ID(Pattern.compile("^/api/users/[0-9]+/$")), MAKE_ORDER(
+            Pattern.compile("^/api/users/[0-9]+/certs$")), GET_CERT_BY_ID(
             Pattern.compile("^/api/gift-certs/[0-9]+/$")), GET_USER_CERT_BY_USER_ID(
             Pattern.compile("^/api/gift-certs/[0-9]+/user$")), NO_NEED_VALIDATION(Pattern.compile(""));
     Pattern uriPattern;
@@ -50,11 +48,11 @@ public class UserDataAccessURIValidator extends RestTemplate {
 
     public UserDataAccessURIValidator() {
         validationRulesByURI = new HashMap<>();
-        validationRulesByURI.put(URIsToValidation.GET_USER_BY_ID,GET_USER_BY_ID);
-        validationRulesByURI.put(URIsToValidation.GET_CERT_BY_ID,GET_CERT_BY_ID);
-        validationRulesByURI.put(URIsToValidation.GET_USER_CERT_BY_USER_ID,GET_CERT_BY_USER_ID);
-        validationRulesByURI.put(URIsToValidation.NO_NEED_VALIDATION,DEFAULT);
-        validationRulesByURI.put(URIsToValidation.MAKE_ORDER,GET_USER_BY_ID);
+        validationRulesByURI.put(URIsToValidation.GET_USER_BY_ID, GET_USER_BY_ID);
+        validationRulesByURI.put(URIsToValidation.GET_CERT_BY_ID, GET_CERT_BY_ID);
+        validationRulesByURI.put(URIsToValidation.GET_USER_CERT_BY_USER_ID, GET_CERT_BY_USER_ID);
+        validationRulesByURI.put(URIsToValidation.NO_NEED_VALIDATION, DEFAULT);
+        validationRulesByURI.put(URIsToValidation.MAKE_ORDER, GET_USER_BY_ID);
 
     }
 

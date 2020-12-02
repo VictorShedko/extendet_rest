@@ -22,10 +22,11 @@ public class JWTUserDetailsService implements UserDetailsService {
     private final JWTUserFactory factory;
 
     @Autowired
-    public JWTUserDetailsService(UserService userService, JWTUserFactory factory,CertificateService certificateService) {
+    public JWTUserDetailsService(UserService userService, JWTUserFactory factory,
+            CertificateService certificateService) {
         this.userService = userService;
         this.factory = factory;
-        this.certificateService=certificateService;
+        this.certificateService = certificateService;
     }
 
     @Override
@@ -34,11 +35,11 @@ public class JWTUserDetailsService implements UserDetailsService {
         List<Certificate> certs;
         try {
             user = userService.findByName(s);
-            certs=certificateService.findCertificatesByUser(user.getId());
+            certs = certificateService.findCertificatesByUser(user.getId());
         } catch (ResourceNotFoundedException ex) {
             throw new UsernameNotFoundException("User not founded ", ex);
         }
-        return factory.createToken(user,certs);
+        return factory.createToken(user, certs);
 
     }
 }

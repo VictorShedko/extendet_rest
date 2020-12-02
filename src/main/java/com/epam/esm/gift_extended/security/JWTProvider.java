@@ -1,7 +1,5 @@
 package com.epam.esm.gift_extended.security;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +11,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWTProvider {
-    private static final Long ONE_MINUTE =60_000L;
+
+    private static final Long ONE_MINUTE = 60_000L;
 
     @Value("$(jwt.secret)")
     private String jwtSecret;
@@ -21,7 +20,7 @@ public class JWTProvider {
     public String generateToken(String login) {
         Date date = new Date();
         long t = date.getTime();
-        Date expirationTime = new Date(t + ONE_MINUTE*15);
+        Date expirationTime = new Date(t + ONE_MINUTE * 15);
 
         return Jwts.builder()
                 .setSubject(login)

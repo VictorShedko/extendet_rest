@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/gift-certs/")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/tags/**")
-                .hasAnyAuthority("USER","ADMIN")
+                .hasAnyAuthority("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, "/api/users/*/")
                 .hasAnyAuthority("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, "/api/gift-certs/*/user")

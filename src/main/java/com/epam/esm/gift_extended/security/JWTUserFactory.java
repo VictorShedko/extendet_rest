@@ -28,7 +28,7 @@ public class JWTUserFactory {
         authorityByRole.put(Role.GUEST, List.of());
     }
 
-    public JWTUser createToken(User user,List<Certificate> certificates) {
+    public JWTUser createToken(User user, List<Certificate> certificates) {
         JWTUser jwtUser = new JWTUser();
         List<GrantedAuthority> authorities = authorityByRole.get(user.getRole());
         jwtUser.setAuthorities(authorities);
