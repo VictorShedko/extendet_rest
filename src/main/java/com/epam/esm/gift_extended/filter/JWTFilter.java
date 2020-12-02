@@ -59,14 +59,15 @@ public class JWTFilter extends GenericFilterBean {
 
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
-            String url = httpServletRequest.getRequestURI();
             JWTUser customUserDetails = userDetailsService.loadUserByUsername(userLogin);
-            if (userIdInURIValidator.validate(url, customUserDetails)) {
+            logger.info(customUserDetails.getAuthorities());
+            if (userIdInURIValidator.validate(httpServletRequest, customUserDetails)) {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails,
                         null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

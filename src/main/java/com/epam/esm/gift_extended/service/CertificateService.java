@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
-import com.epam.esm.gift_extended.exception.EntityAlreadyAssignedException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.CertificateRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
@@ -57,7 +56,7 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.isExist(t);
     }
 
-    private final Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
+    private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     @PostConstruct
     public void initHashMap() {
@@ -178,7 +177,9 @@ public class CertificateService implements GiftService<Certificate> {
         return repository.findUserCertificates(userId, pageable);
     }
 
-
+    public List<Certificate> findCertificatesByUser(int userId) {
+        return repository.findUserCertificates(userId);
+    }
 
     public Certificate findByName(String name) {
         return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundedException("added cert", "gen"));

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Order;
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.exception.EntityAlreadyAssignedException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.OrderRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
@@ -21,6 +22,9 @@ public class OrderService implements GiftService<Order> {
     private OrderRepository repository;
 
     private CertificateService certificateService;
+    private UserService userService;
+
+
 
     @Autowired
     public void setCertificateService(CertificateService certificateService) {
@@ -32,8 +36,6 @@ public class OrderService implements GiftService<Order> {
         this.userService = userService;
     }
 
-    private UserService userService;
-
     @Autowired
     public OrderService(OrderRepository repository) {
         this.repository = repository;
@@ -43,11 +45,16 @@ public class OrderService implements GiftService<Order> {
     public Order createOrder(Integer userId, List<Integer> certIds) {
         Order order = new Order();
         User user = userService.findById(userId);
-        List<Certificate> certificates = certIds.stream()
+
+        List<Certificate> orderedCertificates = certIds.stream()
                 .map(certId -> certificateService.findById(certId))
                 .collect(Collectors.toList());
+        List<Certificate> userCertificates=certificateService.findCertificatesByUser(userId);
+        if(userCertificates.containsAll(orderedCertificates)){
+            throw new EntityAlreadyAssignedException("some certificate already assigned to this user");
+        }
         order.setCustomer(user);
-        order.setCertificates(certificates);
+        order.setCertificates(orderedCertificates);
         order.setOrderCost(countOrderCost(order));
         order.setOrderDate(new Date());
         save(order);
@@ -63,6 +70,11 @@ public class OrderService implements GiftService<Order> {
         return repository.findByUserId(userId, pageSortInfo);
     }
 
+    public List<Order> getOrdersByUserId(Integer userId) {
+
+        return repository.findByUserId(userId);
+    }
+
     @Override
     public List<Order> allWithPagination(int from, int amount, String sort) {
         PageSortInfo pageSortInfo = PageSortInfo.of(from, amount, sort);
@@ -74,7 +86,6 @@ public class OrderService implements GiftService<Order> {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundedException("order with id", id.toString()));
     }
-
 
     @Override
     public void save(Order order) {

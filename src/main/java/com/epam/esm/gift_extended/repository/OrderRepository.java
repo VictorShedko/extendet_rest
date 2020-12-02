@@ -8,4 +8,7 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 public interface OrderRepository extends GiftRepository<Order> {
 
     List<Order> findByUserId(Integer userId, PageSortInfo pageSortInfo);
+
+    List<Order> findByUserId(Integer userId);
 }
+

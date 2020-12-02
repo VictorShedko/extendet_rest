@@ -16,7 +16,15 @@ public class JWTUser implements UserDetails {
     private Role role;
     private List<? extends GrantedAuthority> authorities;
     private List<Integer> certIds;
+    private List<Integer> orderIds;
 
+    public List<Integer> getOrderIds() {
+        return orderIds;
+    }
+
+    public void setOrderIds(List<Integer> orderIds) {
+        this.orderIds = orderIds;
+    }
 
     public List<Integer> getCertIds() {
         return certIds;

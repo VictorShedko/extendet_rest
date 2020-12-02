@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.epam.esm.gift_extended.entity.RegistrationRequest;
 import com.epam.esm.gift_extended.entity.Role;
 import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.exception.InvalidVerificationDataException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
 import com.epam.esm.gift_extended.repository.UserRepository;
 import com.epam.esm.gift_extended.repository.UserRepositoryImpl;
@@ -19,7 +20,7 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 @Service
 public class UserService implements GiftService<User> {
 
-    private final CertificateService certificateService;
+    private CertificateService certificateService;
 
     private final UserRepository repository;
 
@@ -28,8 +29,12 @@ public class UserService implements GiftService<User> {
     private JWTProvider tokenProvider;
 
     @Autowired
-    public UserService(UserRepository repository, CertificateService certificateService) {
+    public UserService(UserRepository repository) {
         this.repository = repository;
+    }
+
+    @Autowired
+    public void setCertificateService(CertificateService certificateService) {
         this.certificateService = certificateService;
     }
 
@@ -43,15 +48,9 @@ public class UserService implements GiftService<User> {
         this.tokenProvider = tokenProvider;
     }
 
-    @Autowired
-    public UserService(UserRepositoryImpl repository) {
-        this.repository = repository;
-
-    }
-
     @Override
     public void save(User user) {
-        String encoded=passwordEncoder.encode(user.getPassword());
+        String encoded = passwordEncoder.encode(user.getPassword());
         user.setPassword(encoded);
         repository.save(user);
     }
@@ -59,7 +58,7 @@ public class UserService implements GiftService<User> {
     public void save(RegistrationRequest request) {
         User user = new User();
         user.setName(request.getUsername());
-        String encoded=passwordEncoder.encode(request.getPassword());
+        String encoded = passwordEncoder.encode(request.getPassword());
         user.setPassword(encoded);
         user.setRole(Role.USER);
         repository.save(user);
@@ -68,7 +67,9 @@ public class UserService implements GiftService<User> {
     public String auth(RegistrationRequest request) {
         User userFromBd = repository.findByName(request.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundedException("user with username ", request.getUsername()));
-        passwordEncoder.matches(userFromBd.getPassword(), request.getUsername());
+        if(!passwordEncoder.matches(userFromBd.getPassword(), request.getUsername())){
+            throw new InvalidVerificationDataException();
+        }
         return tokenProvider.generateToken(userFromBd.getName());
 
     }
@@ -111,12 +112,6 @@ public class UserService implements GiftService<User> {
 
     public User findByName(String name) {
         return repository.findByName(name).orElseThrow(() -> new ResourceNotFoundedException("user name ", name));
-    }
-
-    @Override
-    public List<User> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
-        return repository.findAll(pageable);
     }
 
     public List<User> findByPartOfName(String pattern, Integer page, Integer size, String sort) {

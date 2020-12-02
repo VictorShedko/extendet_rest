@@ -100,8 +100,8 @@ public class TagController {
         if (page < all) {
             links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size, sort)).withRel("next"));
         }
-        links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
-        links.add(linkTo(methodOn(CertificateController.class).allPaged((int) all, size, sort)).withRel("last"));
+        links.add(linkTo(methodOn(TagController.class).allPaged(0, size, sort)).withRel("first"));
+        links.add(linkTo(methodOn(TagController.class).allPaged((int) all, size, sort)).withRel("last"));
         links.add(linkTo(methodOn(TagController.class).allPaged(page, size, sort)).withSelfRel());
         return attachLinksToList(tags, links);
     }

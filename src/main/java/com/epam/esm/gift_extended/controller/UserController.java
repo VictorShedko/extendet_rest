@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.epam.esm.gift_extended.entity.Order;
 import com.epam.esm.gift_extended.entity.RegistrationRequest;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.service.CertificateService;
@@ -61,9 +60,9 @@ public class UserController {
         if (page < all) {
             links.add(linkTo(methodOn(TagController.class).allPaged(page + 1, size,sort)).withRel("next"));
         }
-        links.add(linkTo(methodOn(CertificateController.class).allPaged(0, size, sort)).withRel("first"));
-        links.add(linkTo(methodOn(CertificateController.class).allPaged((int)all, size, sort)).withRel("last"));
-        links.add(linkTo(methodOn(TagController.class).allPaged(page, size,sort)).withSelfRel());
+        links.add(linkTo(methodOn(UserController.class).allPaged(0, size, sort)).withRel("first"));
+        links.add(linkTo(methodOn(UserController.class).allPaged((int)all, size, sort)).withRel("last"));
+        links.add(linkTo(methodOn(UserController.class).allPaged(page, size,sort)).withSelfRel());
         return attachLinksToList(users, links);
     }
 

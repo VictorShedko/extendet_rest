@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.epam.esm.gift_extended.entity.Certificate;
+import com.epam.esm.gift_extended.entity.Order;
 import com.epam.esm.gift_extended.entity.Role;
 import com.epam.esm.gift_extended.entity.User;
 
@@ -28,7 +29,7 @@ public class JWTUserFactory {
         authorityByRole.put(Role.GUEST, List.of());
     }
 
-    public JWTUser createToken(User user, List<Certificate> certificates) {
+    public JWTUser createToken(User user, List<Certificate> certificates, List<Order> orders) {
         JWTUser jwtUser = new JWTUser();
         List<GrantedAuthority> authorities = authorityByRole.get(user.getRole());
         jwtUser.setAuthorities(authorities);
@@ -36,6 +37,7 @@ public class JWTUserFactory {
         jwtUser.setUsername(user.getName());
         jwtUser.setId(user.getId());
         jwtUser.setRole(user.getRole());
+        jwtUser.setOrderIds(orders.stream().map(Order::getId).collect(Collectors.toList()));
         jwtUser.setCertIds(certificates.stream().map(Certificate::getId).collect(Collectors.toList()));
         return jwtUser;
     }

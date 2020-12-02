@@ -31,32 +31,55 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+
                 .antMatchers(HttpMethod.POST, "/api/users/register")
                 .permitAll()
+
                 .antMatchers(HttpMethod.POST, "/api/users/auth")
                 .permitAll()
+
                 .antMatchers(HttpMethod.GET, "/api/gift-certs/")
                 .permitAll()
+
+                .antMatchers(HttpMethod.GET, "/api/gift-certs/*/")
+                .permitAll()
+
                 .antMatchers(HttpMethod.GET, "/api/tags/**")
                 .hasAnyAuthority("USER", "ADMIN")
+
+                .antMatchers(HttpMethod.GET, "/api/users/")
+                .hasAnyAuthority("ADMIN")
+
                 .antMatchers(HttpMethod.GET, "/api/users/*/")
-                .hasAnyAuthority("USER", "ADMIN")
+                .hasAnyAuthority("USER","ADMIN")
+
                 .antMatchers(HttpMethod.GET, "/api/gift-certs/*/user")
                 .hasAnyAuthority("USER", "ADMIN")
-                .antMatchers(HttpMethod.GET, "/api/gift-certs/*/")
+
+                .antMatchers(HttpMethod.GET, "/api/orders/*/userOrders")
                 .hasAnyAuthority("USER", "ADMIN")
-                .antMatchers(HttpMethod.POST, "/api/user/*/certs")
-                .hasAuthority("USER")
+
+                .antMatchers(HttpMethod.POST, "/api/orders/*/userOrders")
+                .hasAnyAuthority("USER", "ADMIN")
+
                 .antMatchers(HttpMethod.POST, "/api/tags/**")
                 .hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/api/tags/**")
-                .hasAuthority("ADMIN")
+
                 .antMatchers(HttpMethod.POST, "/api/users/**")
                 .hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/api/users/**")
+
+                .antMatchers(HttpMethod.DELETE, "/api/**")
                 .hasAuthority("ADMIN")
-                .antMatchers("/api/*")
+
+                .antMatchers(HttpMethod.PATCH, "/api/**")
                 .hasAuthority("ADMIN")
+
+                .antMatchers(HttpMethod.POST, "/api/gift-certs/**")
+                .hasAuthority("ADMIN")
+
+                .antMatchers("/api/**")
+                .hasAuthority("ADMIN")
+
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

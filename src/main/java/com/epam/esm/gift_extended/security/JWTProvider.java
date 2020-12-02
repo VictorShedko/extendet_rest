@@ -20,7 +20,7 @@ public class JWTProvider {
     public String generateToken(String login) {
         Date date = new Date();
         long t = date.getTime();
-        Date expirationTime = new Date(t + ONE_MINUTE * 15);
+        Date expirationTime = new Date(t + ONE_MINUTE * 120);
 
         return Jwts.builder()
                 .setSubject(login)
