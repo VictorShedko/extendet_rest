@@ -40,11 +40,10 @@ public class JWTUserDetailsService implements UserDetailsService {
         try {
             user = userService.findByName(s);
             orders=orderService.getOrdersByUserId(user.getId());
-            certs = certificateService.findCertificatesByUser(user.getId());
         } catch (ResourceNotFoundedException ex) {
             throw new UsernameNotFoundException("User not founded ", ex);
         }
-        return factory.createToken(user, certs,orders);
+        return factory.createToken(user,orders);
 
     }
 }

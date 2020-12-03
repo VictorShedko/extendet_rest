@@ -1,47 +1,22 @@
 package com.epam.esm.gift_extended.service.util;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import com.epam.esm.gift_extended.exception.BadPaginationException;
 
 public class PageSortInfo {
 
-    private int pageSize;
-    private int pageNumber;
-    private SortDirection sortDirection;
 
-    private PageSortInfo(int pageNumber, int pageSize, SortDirection sortDirection) {
-        this.pageSize = pageSize;
-        this.pageNumber = pageNumber;
-        this.sortDirection = sortDirection;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    public SortDirection getSortDirection() {
-        return sortDirection;
-    }
-
-    public void setSortDirection(SortDirection sortDirection) {
-        this.sortDirection = sortDirection;
-    }
-
-    public static PageSortInfo of(int page, int size, String sort) {
+    public static Pageable of(int page, int size, String sortDirection,String sortParam) {
         validatePageNumber(page);
         validatePageSize(size);
-        return new PageSortInfo(page, size, SortDirection.getByStringOrDefault(sort));
+        Sort sort=Sort.by(sortParam);
+        if(SortDirection.getByStringOrDefault(sortDirection)==SortDirection.DESC){
+            sort=sort.descending();
+        }
+        return PageRequest.of(page, size,sort);
     }
 
     private static void validatePageNumber(int pageNumber) throws BadPaginationException {

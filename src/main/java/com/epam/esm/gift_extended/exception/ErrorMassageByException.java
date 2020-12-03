@@ -20,7 +20,8 @@ public enum ErrorMassageByException {
     }, HttpStatus.NOT_FOUND), DATA_INTEGRITY(8, DataIntegrityViolationException.class,
             exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST), BAD_PAGINATION(9,
             BadPaginationException.class, Throwable::getMessage, HttpStatus.BAD_REQUEST), ALREADY_BOUGHT(10,
-            EntityAlreadyAssignedException.class, Throwable::getMessage, HttpStatus.CONFLICT);
+            EntityAlreadyAssignedException.class, Throwable::getMessage, HttpStatus.CONFLICT),
+    INVALID_PASSWORD(11,InvalidVerificationDataException.class,exception -> "incorrect username or password",HttpStatus.BAD_REQUEST);
 
     private final int code;
     private final Class<? extends Exception> exceptionClass;

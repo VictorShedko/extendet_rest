@@ -59,9 +59,9 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<Tag> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT T FROM Tag as T order by T.name " + pageable.getSortDirection().getTypeAsString());
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
+                "SELECT T FROM Tag as T order by T.name "); //+ pageable.getSortDirection().getTypeAsString());
+      //  query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
+       // query.setMaxResults(pageable.getPageSize());
         return query.getResultList();
     }
 

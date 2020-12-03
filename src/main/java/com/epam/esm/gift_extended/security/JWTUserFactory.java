@@ -29,7 +29,7 @@ public class JWTUserFactory {
         authorityByRole.put(Role.GUEST, List.of());
     }
 
-    public JWTUser createToken(User user, List<Certificate> certificates, List<Order> orders) {
+    public JWTUser createToken(User user, List<Order> orders) {
         JWTUser jwtUser = new JWTUser();
         List<GrantedAuthority> authorities = authorityByRole.get(user.getRole());
         jwtUser.setAuthorities(authorities);
@@ -38,7 +38,6 @@ public class JWTUserFactory {
         jwtUser.setId(user.getId());
         jwtUser.setRole(user.getRole());
         jwtUser.setOrderIds(orders.stream().map(Order::getId).collect(Collectors.toList()));
-        jwtUser.setCertIds(certificates.stream().map(Certificate::getId).collect(Collectors.toList()));
         return jwtUser;
     }
 }

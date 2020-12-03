@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,15 +20,20 @@ import com.epam.esm.gift_extended.entity.Certificate;
 import com.epam.esm.gift_extended.entity.Tag;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.CertificateRepository;
+import com.epam.esm.gift_extended.repository.SpringDataCertificateRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Service
 public class CertificateService implements GiftService<Certificate> {
 
-    private final CertificateRepository repository;
+    private static final String SORT_PARAM = "id";
+    private final SpringDataCertificateRepository repository;
 
     private TagService tagService;
+
+    private UserService userService;
+
+    private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     @Autowired
     public void setTagService(TagService tagService) {
@@ -39,24 +45,10 @@ public class CertificateService implements GiftService<Certificate> {
         this.userService = userService;
     }
 
-    private UserService userService;
-
-    @Override
-    public Iterable<Certificate> all() {
-        return repository.findAll();
+    @Autowired
+    public CertificateService(SpringDataCertificateRepository repository) {
+        this.repository = repository;
     }
-
-    @Override
-    public long countEntities() {
-        return repository.count();
-    }
-
-    @Override
-    public boolean isExist(Certificate t) {
-        return repository.isExist(t);
-    }
-
-    private Map<Predicate<Certificate>, BiConsumer<Certificate, Certificate>> giftCertificateUpdateMap;
 
     @PostConstruct
     public void initHashMap() {
@@ -84,8 +76,19 @@ public class CertificateService implements GiftService<Certificate> {
         giftCertificateUpdateMap.put(certificate -> true, (base, patch) -> base.setUpdateTime(new Date()));
     }
 
-    public CertificateService(CertificateRepository repository) {
-        this.repository = repository;
+    @Override
+    public Iterable<Certificate> all() {
+        return repository.findAll();
+    }
+
+    @Override
+    public long countEntities() {
+        return repository.count();
+    }
+
+    @Override
+    public boolean isExist(Certificate t) {
+        return repository.existsById(t.getId());
     }
 
     public Certificate updateCertFields(Certificate base, Certificate patch) {
@@ -98,12 +101,12 @@ public class CertificateService implements GiftService<Certificate> {
     }
 
     public List<Certificate> searchByAnyString(String pattern, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         return repository.findDistinctByDescriptionContainingAndNameContaining(pattern, pattern, pageable);
     }
 
     public List<Certificate> searchByListOfTagNames(List<String> names, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         List<Tag> tags = names.stream()
                 .map(tagService::findByName)
                 .filter(Optional::isPresent)
@@ -114,7 +117,7 @@ public class CertificateService implements GiftService<Certificate> {
 
     public List<Certificate> searchByUserAndTag(Integer tagId, Integer userId, Integer page, Integer size,
             String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         Tag tag = tagService.findById(tagId);
         User user = userService.findById(userId);
         return repository.findCertificateByHolderAndTag(user, tag, pageable);
@@ -168,12 +171,12 @@ public class CertificateService implements GiftService<Certificate> {
 
     @Override
     public List<Certificate> allWithPagination(int page, int size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
-        return repository.findAll(pageable);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
+        return repository.findAll(pageable).toList();
     }
 
     public List<Certificate> findCertificatesByUser(int userId, Integer page, Integer size, String sort) {
-        PageSortInfo pageable = PageSortInfo.of(page, size, sort);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         return repository.findUserCertificates(userId, pageable);
     }
 

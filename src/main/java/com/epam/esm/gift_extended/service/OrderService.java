@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,18 +14,18 @@ import com.epam.esm.gift_extended.entity.Order;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.exception.EntityAlreadyAssignedException;
 import com.epam.esm.gift_extended.exception.ResourceNotFoundedException;
-import com.epam.esm.gift_extended.repository.OrderRepository;
+import com.epam.esm.gift_extended.repository.SpringDataOrderRepository;
 import com.epam.esm.gift_extended.service.util.PageSortInfo;
 
 @Service
 public class OrderService implements GiftService<Order> {
 
-    private OrderRepository repository;
+    private static final String SORT_PARAM = "id";
+
+    private SpringDataOrderRepository repository;
 
     private CertificateService certificateService;
     private UserService userService;
-
-
 
     @Autowired
     public void setCertificateService(CertificateService certificateService) {
@@ -37,7 +38,7 @@ public class OrderService implements GiftService<Order> {
     }
 
     @Autowired
-    public OrderService(OrderRepository repository) {
+    public OrderService(SpringDataOrderRepository repository) {
         this.repository = repository;
     }
 
@@ -49,8 +50,8 @@ public class OrderService implements GiftService<Order> {
         List<Certificate> orderedCertificates = certIds.stream()
                 .map(certId -> certificateService.findById(certId))
                 .collect(Collectors.toList());
-        List<Certificate> userCertificates=certificateService.findCertificatesByUser(userId);
-        if(userCertificates.containsAll(orderedCertificates)){
+        List<Certificate> userCertificates = certificateService.findCertificatesByUser(userId);
+        if (userCertificates.containsAll(orderedCertificates)) {
             throw new EntityAlreadyAssignedException("some certificate already assigned to this user");
         }
         order.setCustomer(user);
@@ -66,19 +67,19 @@ public class OrderService implements GiftService<Order> {
     }
 
     public List<Order> getOrdersByUserId(Integer userId, int page, int size, String sort) {
-        PageSortInfo pageSortInfo = PageSortInfo.of(page, size, sort);
-        return repository.findByUserId(userId, pageSortInfo);
+        Pageable pageSortInfo = PageSortInfo.of(page, size, sort, SORT_PARAM);
+        return repository.findByCustomerUserId(userId, pageSortInfo);
     }
 
     public List<Order> getOrdersByUserId(Integer userId) {
 
-        return repository.findByUserId(userId);
+        return repository.findByCustomerUserId(userId);
     }
 
     @Override
     public List<Order> allWithPagination(int from, int amount, String sort) {
-        PageSortInfo pageSortInfo = PageSortInfo.of(from, amount, sort);
-        return repository.findAll(pageSortInfo);
+        Pageable pageSortInfo = PageSortInfo.of(from, amount, sort, SORT_PARAM);
+        return repository.findAll(pageSortInfo).toList();
     }
 
     @Override
@@ -110,6 +111,6 @@ public class OrderService implements GiftService<Order> {
 
     @Override
     public boolean isExist(Order order) {
-        return repository.isExist(order);
+        return repository.existsById(order.getId());
     }
 }
