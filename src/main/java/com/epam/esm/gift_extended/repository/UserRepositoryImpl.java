@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.User;
@@ -27,12 +26,14 @@ public class UserRepositoryImpl implements UserRepository {
         this.manager = manager;
     }
 
+
     @Override
     public Optional<User> findRichestByOrderPriceSum() {
         Query query = manager.createNativeQuery(
                 "SELECT user.user_id,user.name " + "                     FROM user " + "           "
-                        + "                         JOIN certificate as c on user.user_id = c.user_id "
-                        + "                 GROUP BY c.user_id " + "                     ORDER BY SUM(c.price) DESC "
+                        + "                         JOIN user_order as o on user.user_id = o.customer_user_id "
+                        + "                 GROUP BY user.user_id "
+                        + "                 ORDER BY SUM(o.order_cost) DESC "
                         + "                 LIMIT 1 ", User.class);
         try {
             return Optional.ofNullable((User) query.getSingleResult());
@@ -54,17 +55,23 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> findByNameContains(String partOfName) {
-        Query query = manager.createQuery("SELECT U FROM User as U WHERE U.name like :name");
+        Query query = manager.createQuery("SELECT U FROM User as U WHERE U.name like :name order by U.name");
         query.setParameter("name", "%" + partOfName + "%");
         return query.getResultList();
     }
 
     @Override
+    public List<User> findByNameContains(String pattern, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT U FROM User as U WHERE U.name like :name order by U.name");
+        query.setParameter("name", "%" + pattern + "%");
+        return query.getResultList();
+    }
+
+    @Override
     public List<User> findAll(PageSortInfo pageable) {
-        Query query = manager.createQuery(
-                "SELECT U FROM User as U order by U.name " + pageable.getSortDirection().getTypeAsString());
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT U FROM User as U order by U.name ");
         return query.getResultList();
     }
 

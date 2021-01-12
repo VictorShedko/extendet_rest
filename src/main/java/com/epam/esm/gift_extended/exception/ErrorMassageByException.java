@@ -2,6 +2,7 @@ package com.epam.esm.gift_extended.exception;
 
 import java.util.function.Function;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
 public enum ErrorMassageByException {
@@ -16,12 +17,16 @@ public enum ErrorMassageByException {
     }, HttpStatus.BAD_REQUEST), RESOURCE_NOT_FOUND(4, ResourceNotFoundedException.class, ex -> {
         return "Resource not founded requested resource is " + ((ResourceNotFoundedException) ex).getResourceName()
                 + " requested value is " + ((ResourceNotFoundedException) ex).getRequestedValues();
-    }, HttpStatus.NOT_FOUND);
+    }, HttpStatus.NOT_FOUND), DATA_INTEGRITY(8, DataIntegrityViolationException.class,
+            exception -> "Uniq field duplication", HttpStatus.BAD_REQUEST), BAD_PAGINATION(9,
+            BadPaginationException.class, Throwable::getMessage, HttpStatus.BAD_REQUEST), ALREADY_BOUGHT(10,
+            EntityAlreadyAssignedException.class, Throwable::getMessage, HttpStatus.CONFLICT),
+    INVALID_PASSWORD(11,InvalidVerificationDataException.class,exception -> "incorrect username or password",HttpStatus.BAD_REQUEST);
 
-    private int code;
-    private Class<? extends Exception> exceptionClass;
-    private Function<Exception, String> messageBuilder;
-    private HttpStatus status;
+    private final int code;
+    private final Class<? extends Exception> exceptionClass;
+    private final Function<Exception, String> messageBuilder;
+    private final HttpStatus status;
 
     ErrorMassageByException(int i, Class<? extends Exception> exceptionClass,
             Function<Exception, String> messageBuilder, HttpStatus status) {

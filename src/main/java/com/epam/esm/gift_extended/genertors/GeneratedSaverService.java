@@ -41,7 +41,7 @@ public class GeneratedSaverService {
         List<Certificate> certificates = certificateGenerator.generateCertificateList(certAmount);
 
         RelationGenerator relationGenerator = new RelationGenerator();
-        relationGenerator.MakeRelation(users, certificates, tags);
+        relationGenerator.MakeRelation(users, certificates, tags,3000);
 
         saveToRepo(users, tags, certificates);
     }

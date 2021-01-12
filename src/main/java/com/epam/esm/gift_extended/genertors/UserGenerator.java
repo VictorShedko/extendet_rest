@@ -1,10 +1,13 @@
 package com.epam.esm.gift_extended.genertors;
 
+import static com.epam.esm.gift_extended.entity.Role.*;
+
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.epam.esm.gift_extended.entity.Role;
 import com.epam.esm.gift_extended.entity.User;
 import com.epam.esm.gift_extended.genertors.util.RandomUtil;
 
@@ -22,11 +25,13 @@ public class UserGenerator {
 
     public List<User> generateUserList(int amount) {
         return IntStream.range(0, amount)
-                .mapToObj(t -> (String) indexedUsernameSupplier.apply(t))
-                .map(str -> (String) str)
+                .mapToObj(t -> indexedUsernameSupplier.apply(t))
+                .map(str -> str)
                 .map(t -> {
                     User user = new User();
                     user.setName(t);
+                    user.setPassword("123456");
+                    user.setRole(USER);
                     return user;
                 })
                 .collect(Collectors.toList());

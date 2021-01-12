@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.Certificate;
@@ -31,7 +30,16 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public List<Certificate> findUserCertificates(Integer userId) {
-        Query query = manager.createQuery("SELECT cert " + "FROM Certificate cert " + "WHERE cert.holder.id = :id ");
+        Query query = manager.createQuery(
+                "SELECT cert FROM Order  O join O.customer customer join O.certificates cert WHERE customer.id=:id order by cert.name");
+        query.setParameter("id", userId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Certificate> findUserCertificates(int userId, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT cert FROM Order  O join O.customer customer join O.certificates cert WHERE customer.id=:id order by cert.name");
         query.setParameter("id", userId);
         return query.getResultList();
     }
@@ -40,7 +48,17 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     public List<Certificate> findByContainsAllTagNames(List<Tag> tags) {
         Query query = manager.createQuery(
                 "SELECT DISTINCT cert " + "FROM Certificate cert " + "join cert.tags as tag " + "WHERE tag in :tags "
-                        + "group by cert having count(tag)=:tagSize");
+                        + "group by cert having count(tag)=:tagSize  order by cert.name");
+        query.setParameter("tags", tags);
+        query.setParameter("tagSize", (long) tags.size());
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Certificate> findByContainsAllTagNames(List<Tag> tags, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT DISTINCT cert " + "FROM Certificate cert " + "join cert.tags as tag " + "WHERE tag in :tags "
+                        + "group by cert having count(tag)=:tagSize  order by cert.name");
         query.setParameter("tags", tags);
         query.setParameter("tagSize", (long) tags.size());
         return query.getResultList();
@@ -48,7 +66,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public Optional<Certificate> findByName(String name) {
-        Query query = manager.createQuery("SELECT C FROM Certificate as C WHERE C.name=:name");
+        Query query = manager.createQuery("SELECT C FROM Certificate as C WHERE C.name=:name ");
         query.setParameter("name", name);
         try {
             return Optional.ofNullable((Certificate) query.getSingleResult());
@@ -60,7 +78,16 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag) {
         Query query = manager.createQuery(
-                "SELECT C FROM Certificate as C join C.tags as T WHERE T=:tag and C.holder=:user");
+                "SELECT C FROM Order O join O.customer cust JOIN O.certificates C join C.tags as T WHERE T=:tag and cust=:user  order by C.name");
+        query.setParameter("user", holder);
+        query.setParameter("tag", tag);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Certificate> findCertificateByHolderAndTag(User holder, Tag tag, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT C FROM Order O join O.customer cust JOIN O.certificates C join C.tags as T WHERE T=:tag and cust=:user  order by C.name");
         query.setParameter("user", holder);
         query.setParameter("tag", tag);
         return query.getResultList();
@@ -69,7 +96,18 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findDistinctByDescriptionContainingAndNameContaining(String name, String description) {
         Query query = manager.createQuery("SELECT c FROM Certificate c "
-                + "WHERE c.name like CONCAT('%',:name,'%') or c.description like CONCAT('%',:description,'%')");
+                + "WHERE c.name like CONCAT('%',:name,'%') or c.description like CONCAT('%',:description,'%')  order by c.name");
+        query.setParameter("name", name);
+        query.setParameter("description", description);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Certificate> findDistinctByDescriptionContainingAndNameContaining(String name, String description,
+            PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable, "SELECT c FROM Certificate c "
+                + "WHERE c.name like CONCAT('%',:name,'%') or c.description like CONCAT('%',:description,'%') "
+                + " order by c.name");
         query.setParameter("name", name);
         query.setParameter("description", description);
         return query.getResultList();
@@ -78,9 +116,9 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     @Override
     public List<Certificate> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT C FROM Certificate as C order by C.name" + pageable.getSortDirection().getTypeAsString());
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
+                "SELECT C FROM Certificate as C order by C.name " );//+ pageable.getSortDirection().getTypeAsString());
+        //query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
+       // query.setMaxResults(pageable.getPageSize());
         return query.getResultList();
     }
 

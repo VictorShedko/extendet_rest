@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.epam.esm.gift_extended.entity.Tag;
@@ -38,26 +37,31 @@ public class TagRepositoryImpl implements TagRepository {
         }
     }
 
+
     @Override
     public Optional<Tag> findMostPopularTagFromRichestUserBySumOfCertificatePrice() {
-        Query query = manager.createNativeQuery("SELECT t.id,t.name " + "FROM gift_ex.user as u "
-                + "    JOIN gift_ex.certificate as c on c.user_id=u.user_id"
-                + "    JOIN gift_ex.certificate_tags as ct on ct.certificate_id=c.id"
-                + "    JOIN gift_ex.tag as t on t.id=ct.tags_id " + "WHERE c.user_id=(SELECT gift_ex.user.user_id "
-                + "                     FROM gift_ex.user " + "           "
-                + "                         JOIN gift_ex.certificate as c on user.user_id = c.user_id "
-                + "                 GROUP BY c.user_id " + "                     ORDER BY SUM(c.price) DESC "
-                + "                 LIMIT 1) " + " " + "GROUP BY t.id " + "    " + "ORDER BY COUNT(t.id) DESC "
-                + "LIMIT 1", Tag.class);
+        Query query = manager.createNativeQuery("SELECT t.id,t.name " + ""
+                + "    FROM user as u "
+                + "    JOIN user_order on u.user_id=user_order.customer_user_id"
+                + "    JOIN user_order_certificates uoc on user_order.id = uoc.order_id "
+                + "    JOIN certificate as c on c.id=uoc.certificates_id"
+                + "    JOIN certificate_tags as ct on ct.certificate_id=c.id"
+                + "    JOIN tag as t on t.id=ct.tags_id " + "WHERE c.user_id="
+                + "(SELECT user.user_id,user.name " + "                     FROM user " + "           "
+                + "                         JOIN user_order as o on user.user_id = o.customer_user_id "
+                + "                 GROUP BY user.user_id " + "                 ORDER BY SUM(o.order_cost) DESC "
+                + "                 LIMIT 1 )"
+
+                + "GROUP BY t.id " + "    " + "ORDER BY COUNT(t.id) DESC " + "LIMIT 1", Tag.class);
         return Optional.ofNullable((Tag) query.getSingleResult());
     }
 
     @Override
     public List<Tag> findAll(PageSortInfo pageable) {
         Query query = manager.createQuery(
-                "SELECT T FROM Tag as T order by T.name " + pageable.getSortDirection().getTypeAsString());
-        query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
-        query.setMaxResults(pageable.getPageSize());
+                "SELECT T FROM Tag as T order by T.name "); //+ pageable.getSortDirection().getTypeAsString());
+      //  query.setFirstResult(pageable.getPageSize() * pageable.getPageNumber());
+       // query.setMaxResults(pageable.getPageSize());
         return query.getResultList();
     }
 
@@ -90,6 +94,21 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<Tag> findAll() {
         Query query = manager.createQuery("SELECT T FROM Tag as T ");
+        return query.getResultList();
+    }
+
+    public List<Tag> findByCert(int certId) {
+        Query query = manager.createQuery(
+                "SELECT T FROM Certificate C inner join C.tags T where C.id=:certId order by T.name");
+        query.setParameter("certId", certId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Tag> findByCert(int certId, PageSortInfo pageable) {
+        Query query = RepositoryUtil.addPaginationToQuery(manager, pageable,
+                "SELECT T FROM Certificate C inner join C.tags T where C.id=:certId order by T.name");
+        query.setParameter("certId", certId);
         return query.getResultList();
     }
 

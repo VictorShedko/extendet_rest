@@ -1,42 +1,34 @@
 package com.epam.esm.gift_extended.service.util;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import com.epam.esm.gift_extended.exception.BadPaginationException;
 
 public class PageSortInfo {
-    private int pageSize;
-    private int pageNumber;
-    private SortDirection sortDirection;
 
-    public PageSortInfo(int pageNumber, int pageSize, SortDirection sortDirection) {
-        this.pageSize = pageSize;
-        this.pageNumber = pageNumber;
-        this.sortDirection = sortDirection;
+
+    public static Pageable of(int page, int size, String sortDirection,String sortParam) {
+        validatePageNumber(page);
+        validatePageSize(size);
+        Sort sort=Sort.by(sortParam);
+        if(SortDirection.getByStringOrDefault(sortDirection)==SortDirection.DESC){
+            sort=sort.descending();
+        }
+        return PageRequest.of(page, size,sort);
     }
 
-    public int getPageSize() {
-        return pageSize;
+    private static void validatePageNumber(int pageNumber) throws BadPaginationException {
+        if(pageNumber<0){
+            throw new BadPaginationException("page number must be positive. Given"+pageNumber);
+        }
     }
 
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
 
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    public SortDirection getSortDirection() {
-        return sortDirection;
-    }
-
-    public void setSortDirection(SortDirection sortDirection) {
-        this.sortDirection = sortDirection;
-    }
-
-    public static PageSortInfo of(int page, int size, String sort){
-        return new PageSortInfo( page,size, SortDirection.getByStringOrDefault(sort));
+    private static void validatePageSize(int pageSize) throws BadPaginationException {
+        if(pageSize<=0){
+            throw new BadPaginationException("page size must be positive. Given"+pageSize);
+        }
     }
 }
