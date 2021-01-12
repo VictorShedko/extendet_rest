@@ -1,9 +1,12 @@
 package com.epam.esm.gift_extended.security;
 
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,10 +14,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.epam.esm.gift_extended.entity.User;
+import com.epam.esm.gift_extended.exception.GiftException;
 import com.epam.esm.gift_extended.filter.JWTFilter;
-
+import com.epam.esm.gift_extended.service.UserService;
 
 @Configuration
+@EnableWebSecurity
+@EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JWTFilter jwtFilter;
@@ -83,12 +90,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAuthority("ADMIN")
 
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).cors();
 
     }
+
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PrincipalExtractor principalExtractor(UserService userService) {
+        return map -> {
+            String name = (String) map.get("sub");
+            User user;
+            try {
+                 user= userService.findByName(name);
+            }catch (GiftException ex){
+                User newUser = new User();
+                newUser.setName((String) map.get("name"));
+                userService.save(newUser);
+                user=newUser;
+            }
+
+            return user;
+        };
     }
 }

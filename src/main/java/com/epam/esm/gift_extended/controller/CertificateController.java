@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,6 +34,7 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping(value = "/")
     public CollectionModel<EntityModel<Certificate>> allPaged(
             @RequestParam(required = false, defaultValue = "0") Integer page,

@@ -51,8 +51,10 @@ public class OrderService implements GiftService<Order> {
                 .map(certId -> certificateService.findById(certId))
                 .collect(Collectors.toList());
         List<Certificate> userCertificates = certificateService.findCertificatesByUser(userId);
-        if (userCertificates.containsAll(orderedCertificates)) {
-            throw new EntityAlreadyAssignedException("some certificate already assigned to this user");
+        for(Certificate certificate:orderedCertificates) {
+            if (userCertificates.contains(certificate)) {
+                throw new EntityAlreadyAssignedException("some certificate already assigned to this user");
+            }
         }
         order.setCustomer(user);
         order.setCertificates(orderedCertificates);

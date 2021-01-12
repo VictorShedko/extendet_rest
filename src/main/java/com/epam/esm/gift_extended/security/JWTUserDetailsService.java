@@ -18,18 +18,29 @@ import com.epam.esm.gift_extended.service.UserService;
 @Service
 public class JWTUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
-    private final CertificateService certificateService;
-    private final OrderService orderService;
-    private final JWTUserFactory factory;
+    private  UserService userService;
+    private  CertificateService certificateService;
+    private  OrderService orderService;
+    private  JWTUserFactory factory;
 
     @Autowired
-    public JWTUserDetailsService(UserService userService, JWTUserFactory factory, CertificateService certificateService,
-            OrderService orderService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
-        this.factory = factory;
+    }
+
+    @Autowired
+    public void setCertificateService(CertificateService certificateService) {
         this.certificateService = certificateService;
+    }
+
+    @Autowired
+    public void setOrderService(OrderService orderService) {
         this.orderService = orderService;
+    }
+
+    @Autowired
+    public void setFactory(JWTUserFactory factory) {
+        this.factory = factory;
     }
 
     @Override
