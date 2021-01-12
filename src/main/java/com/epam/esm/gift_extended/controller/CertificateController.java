@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.epam.esm.gift_extended.entity.Certificate;
+import com.epam.esm.gift_extended.genertors.GeneratedSaverService;
 import com.epam.esm.gift_extended.service.CertificateService;
 
 @RestController
@@ -29,6 +31,13 @@ import com.epam.esm.gift_extended.service.CertificateService;
 public class CertificateController {
 
     private final CertificateService certificateService;
+
+    private GeneratedSaverService generatedSaverService;
+
+    @Autowired
+    public void setGeneratedSaverService(GeneratedSaverService generatedSaverService) {
+        this.generatedSaverService = generatedSaverService;
+    }
 
     public CertificateController(CertificateService certificateService) {
         this.certificateService = certificateService;
@@ -116,6 +125,11 @@ public class CertificateController {
                         linkTo(methodOn(UserController.class).findById(userId)).withRel("holder")));
     }
 
+    @GetMapping(value = "/genrate")
+    public void userCerts() {
+        generatedSaverService.generateEntities(1000,1000,10000);
+    }
+
     private Certificate attachCertLinks(Certificate cert) {
         cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("All Certs"));
         cert.add(linkTo(methodOn(CertificateController.class).findById(cert.getId())).withRel("cert detail"));
@@ -134,4 +148,6 @@ public class CertificateController {
 
         return CollectionModel.of(resultCerts, thisLinks);
     }
+
+
 }
