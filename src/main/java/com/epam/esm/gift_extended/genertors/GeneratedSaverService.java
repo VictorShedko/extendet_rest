@@ -50,9 +50,9 @@ public class GeneratedSaverService {
         List<Certificate> certificates = certificateGenerator.generateCertificateList(certAmount);
 
         RelationGenerator relationGenerator = new RelationGenerator();
-        List<Order> order=relationGenerator.MakeRelation(users, certificates, tags,3000);
+        List<Order> orders=relationGenerator.MakeRelation(users, certificates, tags,3000);
 
-        saveToRepo(users, tags, certificates,order);
+        saveToRepo(users, tags, certificates,orders);
     }
 
 }

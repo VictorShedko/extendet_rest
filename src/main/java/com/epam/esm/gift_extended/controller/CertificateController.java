@@ -130,6 +130,7 @@ public class CertificateController {
         generatedSaverService.generateEntities(1000,1000,10000);
     }
 
+
     private Certificate attachCertLinks(Certificate cert) {
         cert.add(linkTo(methodOn(CertificateController.class).allPaged(0, 10, "asc")).withRel("All Certs"));
         cert.add(linkTo(methodOn(CertificateController.class).findById(cert.getId())).withRel("cert detail"));

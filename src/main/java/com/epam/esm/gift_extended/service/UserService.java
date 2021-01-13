@@ -23,7 +23,7 @@ import com.epam.esm.gift_extended.service.util.PageSortInfo;
 @Service
 public class UserService implements GiftService<User> {
 
-    private static final String SORT_PARAM="name";
+    private static final String SORT_PARAM = "name";
     private final SpringDataUserRepository repository;
 
     private PasswordEncoder passwordEncoder;
@@ -47,16 +47,17 @@ public class UserService implements GiftService<User> {
 
     @Override
     public void save(User user) {
-        String encoded = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encoded);
+        encodeUser(user);
         repository.save(user);
     }
 
     public void save(RegistrationRequest request) {
         User user = new User();
         user.setName(request.getUsername());
-        String encoded = passwordEncoder.encode(request.getPassword());
-        user.setPassword(encoded);
+        user.setPassword(request.getPassword());
+
+        encodeUser(user);
+
         user.setRole(Role.USER);
         repository.save(user);
     }
@@ -64,7 +65,7 @@ public class UserService implements GiftService<User> {
     public String auth(RegistrationRequest request) {
         User userFromBd = repository.findByName(request.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundedException("user with username ", request.getUsername()));
-        if(!passwordEncoder.matches( request.getPassword(),userFromBd.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(), userFromBd.getPassword())) {
             throw new InvalidVerificationDataException();
         }
         return tokenProvider.generateToken(userFromBd.getName());
@@ -94,7 +95,7 @@ public class UserService implements GiftService<User> {
 
     @Override
     public List<User> allWithPagination(int page, int size, String sort) {
-        Pageable pageable = PageSortInfo.of(page, size, sort,SORT_PARAM);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         return repository.findAll(pageable).toList();
     }
 
@@ -112,7 +113,21 @@ public class UserService implements GiftService<User> {
     }
 
     public List<User> findByPartOfName(String pattern, Integer page, Integer size, String sort) {
-        Pageable pageable = PageSortInfo.of(page, size, sort,SORT_PARAM);
+        Pageable pageable = PageSortInfo.of(page, size, sort, SORT_PARAM);
         return repository.findByNameContains(pattern, pageable);
+    }
+
+    @Transactional
+    public void encode() {
+        repository.findAll().forEach(user -> {
+            if (user.getPassword().length() < 10) {
+                encodeUser(user);
+            }
+        });
+    }
+
+    private void encodeUser(User user) {
+        String encoded = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encoded);
     }
 }

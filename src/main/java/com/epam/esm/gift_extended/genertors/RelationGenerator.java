@@ -18,8 +18,10 @@ public class RelationGenerator {
     private static final Integer MAX_TAG_AMOUNT = 50;
 
     public List<Order> MakeRelation(List<User> users, List<Certificate> certificates, List<Tag> tags, int orderAmount) {
-        List<Order> orders = IntStream.of(orderAmount).mapToObj(i -> {
-            return new Order();
+        List<Order> orders = IntStream.range(1,orderAmount).mapToObj(i -> {
+            Order order=new Order();
+            order.setCertificates(new ArrayList<>());
+            return order;
         }).peek(order -> order.getCertificates().add(RandomUtil.getRandomElementFromList(certificates))).peek(order -> {
             RandomUtil.getRandInt(3);
             IntStream.range(0, 3).forEach(n -> {
@@ -35,7 +37,9 @@ public class RelationGenerator {
             order.setOrderDate(new Date());
         }).peek(order -> {
             order.setOrderCost((float) order.getCertificates().stream().mapToDouble(Certificate::getPrice).sum());
-        }).collect(Collectors.toList()); certificates.forEach(cert -> {
+        }).collect(Collectors.toList());
+
+        certificates.forEach(cert -> {
             int tagsAmount = RandomUtil.getRandInt(MAX_TAG_AMOUNT) + 1;
             cert.setTags(RandomUtil.getRandomSubListWithSize(tagsAmount, tags));
         });

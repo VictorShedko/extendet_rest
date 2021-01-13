@@ -1,5 +1,6 @@
 package com.epam.esm.gift_extended.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +22,11 @@ import com.epam.esm.gift_extended.service.UserService;
 
 @Configuration
 @EnableWebSecurity
-@EnableOAuth2Sso
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JWTFilter jwtFilter;
 
+    @Autowired
     public SecurityConfig(JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
@@ -60,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAnyAuthority("ADMIN")
 
                 .antMatchers(HttpMethod.GET, "/api/users/*/")
-                .hasAnyAuthority("USER","ADMIN")
+                .hasAnyAuthority("USER", "ADMIN")
 
                 .antMatchers(HttpMethod.GET, "/api/gift-certs/*/user")
                 .hasAnyAuthority("USER", "ADMIN")
@@ -90,33 +91,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasAuthority("ADMIN")
 
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).cors();
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .cors();
 
     }
-
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public PrincipalExtractor principalExtractor(UserService userService) {
-        return map -> {
-            String name = (String) map.get("sub");
-            User user;
-            try {
-                 user= userService.findByName(name);
-            }catch (GiftException ex){
-                User newUser = new User();
-                newUser.setName((String) map.get("name"));
-                userService.save(newUser);
-                user=newUser;
-            }
-
-            return user;
-        };
-    }
 }

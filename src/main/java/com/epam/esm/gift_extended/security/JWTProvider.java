@@ -14,13 +14,18 @@ public class JWTProvider {
 
     private static final Long ONE_MINUTE = 60_000L;
 
-    @Value("$(jwt.secret)")
+
+    @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${jwt.duration}")
+    private Integer JWTDuration;
+
 
     public String generateToken(String login) {
         Date date = new Date();
         long t = date.getTime();
-        Date expirationTime = new Date(t + ONE_MINUTE * 120);
+        Date expirationTime = new Date(t + ONE_MINUTE * JWTDuration);
 
         return Jwts.builder()
                 .setSubject(login)
